@@ -1,3 +1,9 @@
+// multiplyMatricies = function (object) {
+//         return new Matrix().translate(object.translate.x, object.translate.y, object.translate.z).multiply(
+//             new Matrix().rotate(object.rotateAngle, object.axis.x, object.axis.y, object.axis.z)).multiply(
+//             new Matrix().scale(object.scale.x, object.scale.y, object.scale.z)) || new Matrix();
+//     };
+
 let Matrix = (() => {
 
     let matrix = (identityMatrix) => {
