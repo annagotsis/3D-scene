@@ -1,35 +1,33 @@
-// multiplyMatricies = function (object) {
-//         return new Matrix().translate(object.translate.x, object.translate.y, object.translate.z).multiply(
-//             new Matrix().rotate(object.rotateAngle, object.axis.x, object.axis.y, object.axis.z)).multiply(
-//             new Matrix().scale(object.scale.x, object.scale.y, object.scale.z)) || new Matrix();
-//     };
+(() => {
 
-let Matrix = (() => {
-
-    let matrix = (identityMatrix) => {
-        this.data = identityMatrix || [
+    let Matrix = function() {
+        this.data = arguments.length ? [].slice.call(arguments) : [
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            0, 0, 0, 1];
+            0, 0, 0, 1,
+        ];
     };
 
-    matrix.multiply = (matrix2) => {
-        let result = [];
+    Matrix.prototype.multiply = function (Matrix2) {
+        let result = new Matrix();
         for (let i = 0; i <= this.data.length; i++) {
-            let matrix1 = this.data[i];
-            for (let c = 0; c <= matrix1.length; c++) {
+            let Matrix1 = this.data[i];
+            for (let c = 0; c <= Matrix1.length; c++) {
                 let product = 0;
                 for (let j = 0; j < this.data.length; j++) {
-                    product += this.data[i][j] * matrix2.data[j][c];
+                    product += this.data[i][j] * Matrix2.data[j][c];
                 }
                 result.data[i][c] = product;
             }
         }
-        return new Matrix(result);
+        return result;
     };
 
-    matrix.translate = (tx, ty, tz) => {
+    Matrix.getTranslate = function (tx, ty, tz) {
+        tx = tx || 0;
+        ty = ty || 0;
+        tz = tz || 0;
         let result = new Matrix([
             1, 0, 0, tx,
             0, 1, 0, ty,
@@ -38,7 +36,7 @@ let Matrix = (() => {
         return result;
     };
 
-    matrix.scale = (sx, sy, sz) => {
+    Matrix.scale = (sx, sy, sz) => {
         let result = new Matrix([
             sx, 0, 0, 0,
             0, sy, 0, 0,
@@ -47,7 +45,7 @@ let Matrix = (() => {
         return result;
     };
 
-    matrix.rotate = (angle, x, y, z) => {
+    Matrix.rotate = (angle, x, y, z) => {
         let axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
         let s = Math.sin(angle * Math.PI / 180.0);
         let c = Math.cos(angle * Math.PI / 180.0);
@@ -90,7 +88,7 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.orthoMatrix = (left, right, bottom, top, near, far) => {
+    Matrix.prototype.orthoMatrix = (left, right, bottom, top, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -118,7 +116,7 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.perspective = (left, right, top, bottom, near, far) => {
+    Matrix.prototype.perspective = (left, right, top, bottom, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -145,7 +143,7 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.conversion = () => {
+    Matrix.prototype.conversion = function() {
         let result = [];
         for (let i = 0; i < this.data.length; i++) {
             for (let j = 0; j < this.data.length; i++) {
@@ -155,6 +153,8 @@ let Matrix = (() => {
         return result;
     };
 
-    return matrix;
+    // return Matrix;
+
+    window.Matrix = Matrix;
 
 })();

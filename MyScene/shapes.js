@@ -18,7 +18,7 @@
         this.colors = params.colors || {r: 0, g: 0, b: 0};
       // currentAcceleration
       // currentRotation
-        this.translate = params.translate || {x: 0, y: 0, z: 0};
+        this.translate = params.translate || {tx: 0, ty: 0, tz: 0};
         this.scale = params.scale || {x: 1, y: 1, z: 1};
         this.rotate = params.rotate || 0;
         // this.children = params.children || [];
@@ -26,9 +26,9 @@
         this.vertices = params.vertices || [];
         this.indices = params.indices || [];
         this.mode = params.mode;
-        // this.x = params.x || 0;
-        // this.y = params.y || 0;
-        // this.z = params.z || 0;
+        this.x = params.x || 0;
+        this.y = params.y || 0;
+        this.z = params.z || 0;
     };
 
     shape.cube = () => {
@@ -58,6 +58,8 @@
                 [ 4, 7, 6 ],
                 [ 5, 4, 6 ],
             ],
+
+            // translate: {x: 10, y: 10, z: 10}
         };
     };
 
