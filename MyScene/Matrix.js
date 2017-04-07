@@ -197,14 +197,15 @@
     };
 
     Matrix.prototype.conversion = function() {
-        let resultMatrix = [];
+        let result = [];
         for (let i = 0; i < 4; i += 1) {
-            resultMatrix.push(this.data[i]);
-            resultMatrix.push(this.data[i + 4]);
-            resultMatrix.push(this.data[i + 8]);
-            resultMatrix.push(this.data[i + 12]);
+            result.push(this.data[i]);
+            result.push(this.data[i + 4]);
+            result.push(this.data[i + 8]);
+            result.push(this.data[i + 12]);
         }
-        return resultMatrix;
+        console.log(result);
+        return result;
     };
     //     let result = [];
     //     for (let i = 0; i < this.data.length; i++) {

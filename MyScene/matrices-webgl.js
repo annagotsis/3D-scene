@@ -236,7 +236,7 @@
             [ 0.0, 1.0, 1.0 ],
             [ 0.0, 1.0, 1.0 ]
           ),
-            translate: {tx: 0, ty: 0, tz: 0},
+            translate: {tx: 1, ty: 1, tz: 0},
             scale: {x: 1, y: 1, z: 1},
             rotate: 0,
             axis: { x: -1.0, y: -0.5, z: 1.0 },
@@ -312,12 +312,12 @@
     var normalVector = gl.getUniformLocation(shaderProgram, "normalVector");
     gl.enableVertexAttribArray(normalVector);
 
-    // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
-    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-    //      0, 1, 0, 0, //      matrix should be available as a function.
-    //      0, 0, 1, 0,
-    //      0, 0, 0, 1]
-    // ));
+    gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
+        [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
+         0, 1, 0, 0, //      matrix should be available as a function.
+         0, 0, 1, 0,
+         0, 0, 0, 1]
+    ));
 
     // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
     //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
@@ -351,10 +351,10 @@
                 shape.translate.ty,
                 shape.translate.tz
             );
-        console.log(currentMatrix);
+        // console.log(currentMatrix);
         currentMatrix = currentMatrix.multiply(translate);
-        console.log(translate);
-        console.log(currentMatrix);
+        // console.log(translate);
+        // console.log(currentMatrix.conversion());
 
         gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(currentMatrix.conversion()));
 
