@@ -51,9 +51,10 @@
         varying vec4 finalVertexColor;
         uniform mat4 projectionMatrix;
         uniform mat4 modelViewMatrix;
+        uniform mat4 translateMatrix;
 
         void main(void) {
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
+            gl_Position = modelViewMatrix * projectionMatrix * vec4(vertexPosition, 1.0);
             finalVertexColor = vec4(vertexColor, 1.0);
         }
     </script>
@@ -75,7 +76,7 @@
     </script>
 
     <!-- This script sets up the specific scene for this page. -->
+      <script src="Matrix.js"></script>
     <script src="matrices-webgl.js"></script>
-    <script src="Matrix.js"></script>
   </body>
 </html>

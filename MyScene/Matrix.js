@@ -1,53 +1,104 @@
-// multiplyMatricies = function (object) {
-//         return new Matrix().translate(object.translate.x, object.translate.y, object.translate.z).multiply(
-//             new Matrix().rotate(object.rotateAngle, object.axis.x, object.axis.y, object.axis.z)).multiply(
-//             new Matrix().scale(object.scale.x, object.scale.y, object.scale.z)) || new Matrix();
-//     };
+(() => {
 
-let Matrix = (() => {
-
-    let matrix = (identityMatrix) => {
-        this.data = identityMatrix || [
+    let Matrix = function() {
+        this.data = arguments.length ? [].slice.call(arguments) : [
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            0, 0, 0, 1];
+            0, 0, 0, 1,
+        ];
     };
 
-    matrix.multiply = (matrix2) => {
-        let result = [];
-        for (let i = 0; i <= this.data.length; i++) {
-            let matrix1 = this.data[i];
-            for (let c = 0; c <= matrix1.length; c++) {
-                let product = 0;
-                for (let j = 0; j < this.data.length; j++) {
-                    product += this.data[i][j] * matrix2.data[j][c];
+    Matrix.prototype.multiply = function (Matrix2) {
+        let multResult = 0;
+        let resultMatrix = new Matrix();
+        let position = 0;
+        for (let row = 0; row < 16; row += 4) {
+            for (let column = 0; column < 4; column += 1) {
+                for (let count = 0; count < 4; count += 1) {
+                    multResult += this.data[row + count] * Matrix2.data[column + (count * 4)];
+                    // console.log(multResult);
                 }
-                result.data[i][c] = product;
+                resultMatrix.data[position] = multResult;
+                position += 1;
+                multResult = 0;
             }
         }
-        return new Matrix(result);
-    };
+        return resultMatrix;
 
-    matrix.translate = (tx, ty, tz) => {
-        let result = new Matrix([
-            1, 0, 0, tx,
-            0, 1, 0, ty,
-            0, 0, 1, tz,
-            0, 0, 0, 1]);
+
+
+
+
+    };
+    //     let result = new Matrix();
+    //     for (let i = 0; i <= this.data.length; i++) {
+    //         let Matrix1 = this.data[i];
+    //         for (let c = 0; c <= Matrix1.length; c++) {
+    //             let product = 0;
+    //             for (let j = 0; j < this.data.length; j++) {
+    //                 product += this.data[i][j] * Matrix2.data[j][c];
+    //             }
+    //             result.data[i][c] = product;
+    //         }
+    //     }
+    //     return result;
+    // };
+
+    Matrix.translate = function (tx, ty, tz) {
+        // tx = tx || 0;
+        // ty = ty || 0;
+        // tz = tz || 0;
+        let result = new Matrix(
+            1,
+            0,
+            0,
+            0,
+
+            0,
+            1,
+            0,
+            0,
+
+            0,
+            0,
+            1,
+            0,
+
+            tx,
+            ty,
+            tz,
+            1
+          );
         return result;
     };
 
-    matrix.scale = (sx, sy, sz) => {
-        let result = new Matrix([
-            sx, 0, 0, 0,
-            0, sy, 0, 0,
-            0, 0, sz, 0,
-            0, 0, 0, 1]);
+    Matrix.scale = (sx, sy, sz) => {
+        let result = new Matrix(
+          sx,
+          0,
+          0,
+          0,
+
+          0,
+          sy,
+          0,
+          0,
+
+          0,
+          0,
+          sz,
+          0,
+
+          0,
+          0,
+          0,
+          1
+        );
         return result;
     };
 
-    matrix.rotate = (angle, x, y, z) => {
+    Matrix.rotate = (angle, x, y, z) => {
         let axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
         let s = Math.sin(angle * Math.PI / 180.0);
         let c = Math.cos(angle * Math.PI / 180.0);
@@ -90,7 +141,7 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.orthoMatrix = (left, right, bottom, top, near, far) => {
+    Matrix.prototype.orthoMatrix = (left, right, bottom, top, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -118,7 +169,7 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.perspective = (left, right, top, bottom, near, far) => {
+    Matrix.prototype.perspective = (left, right, top, bottom, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -145,16 +196,27 @@ let Matrix = (() => {
         ]);
     };
 
-    matrix.conversion = () => {
-        let result = [];
-        for (let i = 0; i < this.data.length; i++) {
-            for (let j = 0; j < this.data.length; i++) {
-                result.push(this.data[j][i]);
-            }
+    Matrix.prototype.conversion = function() {
+        let resultMatrix = [];
+        for (let i = 0; i < 4; i += 1) {
+            resultMatrix.push(this.data[i]);
+            resultMatrix.push(this.data[i + 4]);
+            resultMatrix.push(this.data[i + 8]);
+            resultMatrix.push(this.data[i + 12]);
         }
-        return result;
+        return resultMatrix;
     };
+    //     let result = [];
+    //     for (let i = 0; i < this.data.length; i++) {
+    //         for (let j = 0; j < this.data.length; j++) {
+    //             result.push(this.data[j][i]);
+    //         }
+    //     }
+    //     return result;
+    // };
 
-    return matrix;
+    // return Matrix;
+
+    window.Matrix = Matrix;
 
 })();

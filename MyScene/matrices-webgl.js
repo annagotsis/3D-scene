@@ -119,36 +119,36 @@
         // to the scene (yes, a translation will also do the trick, if it
         // where implemented in this program).
 
-        {
-            color: { r: 0.0, g: 0.5, b: 0.0 },
-            vertices: Shape.toRawLineArray(Shape.sphere()),
-            mode: gl.LINES,
-            axis: { x: 3.0, y: 2.0, z: 1.0 }
-        },
-
-        {
-            color: { r: 0.0, g: 0.5, b: 0.0 },
-            vertices: Shape.toRawLineArray(Shape.pyramid()),
-            mode: gl.LINES,
-            axis: { x: 0.0, y: 1.0, z: 1.0 }
-        },
-
-
-        // Something that would have been clipped before.
-        {
-            vertices: [].concat(
-                [ 3.0, 1.5, 0.0 ],
-                [ 2.0, -1.5, 0.0 ],
-                [ 4.0, -1.5, 0.0 ]
-            ),
-            colors: [].concat(
-                [ 1.0, 0.5, 0.0 ],
-                [ 0.0, 0.0, 0.5 ],
-                [ 0.5, 0.75, 0.5 ]
-            ),
-            mode: gl.TRIANGLES,
-            axis: { x: -0.5, y: 1.0, z: 0.0 }
-        },
+        // {
+        //     color: { r: 0.0, g: 0.5, b: 0.0 },
+        //     vertices: Shape.toRawLineArray(Shape.sphere()),
+        //     mode: gl.LINES,
+        //     axis: { x: 3.0, y: 2.0, z: 1.0 }
+        // },
+        //
+        // {
+        //     color: { r: 0.0, g: 0.5, b: 0.0 },
+        //     vertices: Shape.toRawLineArray(Shape.pyramid()),
+        //     mode: gl.LINES,
+        //     axis: { x: 0.0, y: 1.0, z: 1.0 }
+        // },
+        //
+        //
+        // // Something that would have been clipped before.
+        // {
+        //     vertices: [].concat(
+        //         [ 3.0, 1.5, 0.0 ],
+        //         [ 2.0, -1.5, 0.0 ],
+        //         [ 4.0, -1.5, 0.0 ]
+        //     ),
+        //     colors: [].concat(
+        //         [ 1.0, 0.5, 0.0 ],
+        //         [ 0.0, 0.0, 0.5 ],
+        //         [ 0.5, 0.75, 0.5 ]
+        //     ),
+        //     mode: gl.TRIANGLES,
+        //     axis: { x: -0.5, y: 1.0, z: 0.0 }
+        // },
 
         // Show off the new shape.
     //     {
@@ -236,7 +236,7 @@
             [ 0.0, 1.0, 1.0 ],
             [ 0.0, 1.0, 1.0 ]
           ),
-            translate: {x: 10, y: 10, z: 0},
+            translate: {tx: 0, ty: 0, tz: 0},
             scale: {x: 1, y: 1, z: 1},
             rotate: 0,
             axis: { x: -1.0, y: -0.5, z: 1.0 },
@@ -244,6 +244,8 @@
             mode: gl.TRIANGLES
         })
     ];
+
+    console.log(objectsToDraw);
 
     // Pass the vertices to WebGL.
     objectsToDraw.forEach((objectToDraw) => {
@@ -305,30 +307,63 @@
     // model-view and projection, managed separately.
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
+    let translateMatrix = gl.getUniformLocation(shaderProgram, "translateMatrix");
 
+    var normalVector = gl.getUniformLocation(shaderProgram, "normalVector");
+    gl.enableVertexAttribArray(normalVector);
+
+    // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
+    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
+    //      0, 1, 0, 0, //      matrix should be available as a function.
+    //      0, 0, 1, 0,
+    //      0, 0, 0, 1]
+    // ));
+
+    // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
+    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
+    //      0, 1, 0, 0, //      matrix should be available as a function.
+    //      0, 0, 1, 0,
+    //      0, 0, 0, 1]
+    // ));
     /*
      * Displays an individual object, including a transformation that now varies
      * for each object drawn.
      */
-    let drawObject = (object) => {
+    let drawObject = (shape, parent) => {
         // Set the varying colors.
-        gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, shape.colorBuffer);
         gl.vertexAttribPointer(vertexColor, 3, gl.FLOAT, false, 0, 0);
 
         // Set up the model-view matrix, if an axis is included.  If not, we
         // specify the identity matrix.
-        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.axis ?
-            getRotationMatrix(currentRotation, object.axis.x, object.axis.y, object.axis.z) :
-            [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-             0, 1, 0, 0, //      matrix should be available as a function.
-             0, 0, 1, 0,
-             0, 0, 0, 1]
-        ));
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(shape.axis ?
+        //     getRotationMatrix(currentRotation, shape.axis.x, shape.axis.y, shape.axis.z) :
+        //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
+        //      0, 1, 0, 0, //      matrix should be available as a function.
+        //      0, 0, 1, 0,
+        //      0, 0, 0, 1]
+        // ));
+
+        let currentMatrix = parent || new Matrix();
+
+        let translate = Matrix.translate(
+                shape.translate.tx,
+                shape.translate.ty,
+                shape.translate.tz
+            );
+        console.log(currentMatrix);
+        currentMatrix = currentMatrix.multiply(translate);
+        console.log(translate);
+        console.log(currentMatrix);
+
+        gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(currentMatrix.conversion()));
 
         // Set the varying vertex coordinates.
-        gl.bindBuffer(gl.ARRAY_BUFFER, object.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, shape.buffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(object.mode, 0, object.vertices.length / 3);
+        gl.drawArrays(shape.mode, 0, shape.vertices.length / 3);
+
     };
 
     /*
@@ -337,6 +372,8 @@
     let drawScene = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, Matrix.translate().conversion());
 
         objectsToDraw.forEach(drawObject);
 
