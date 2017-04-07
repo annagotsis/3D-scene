@@ -25,11 +25,6 @@
             }
         }
         return resultMatrix;
-
-
-
-
-
     };
     //     let result = new Matrix();
     //     for (let i = 0; i <= this.data.length; i++) {
@@ -118,7 +113,7 @@
         let ys = y * s;
         let zs = z * s;
 
-        return new Matrix([
+        return new Matrix(
             (x2 * oneMinusC) + c,
             (xy * oneMinusC) + zs,
             (xz * oneMinusC) - ys,
@@ -138,7 +133,7 @@
             0.0,
             0.0,
             1.0
-        ]);
+        );
     };
 
     Matrix.prototype.orthoMatrix = (left, right, bottom, top, near, far) => {
@@ -146,7 +141,7 @@
         let height = top - bottom;
         let depth = far - near;
 
-        return new Matrix([
+        return new Matrix(
             2.0 / width,
             0.0,
             0.0,
@@ -166,14 +161,14 @@
             0.0,
             0.0,
             1.0
-        ]);
+        );
     };
 
     Matrix.prototype.perspective = (left, right, top, bottom, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
-        return new Matrix([
+        return new Matrix(
             (2.0 * near) / width,
             0.0,
             (right + left) / width,
@@ -193,7 +188,7 @@
             0.0,
             -1.0,
             0.0
-        ]);
+        );
     };
 
     Matrix.prototype.conversion = function() {
@@ -204,7 +199,7 @@
             result.push(this.data[i + 8]);
             result.push(this.data[i + 12]);
         }
-        console.log(result);
+        // console.log(result);
         return result;
     };
     //     let result = [];

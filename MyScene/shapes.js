@@ -20,7 +20,7 @@
       // currentRotation
         this.translate = params.translate || {x: 0, y: 0, z: 0};
         this.scale = params.scale || {x: 1, y: 1, z: 1};
-        this.rotate = params.rotate || 0;
+        this.angle = params.angle || 0;
         // this.children = params.children || [];
         this.axis = params.axis || {x: 1.0, y: 1.0, z: 1.0};
         this.vertices = params.vertices || [];
@@ -83,8 +83,8 @@
     };
 
     shape.sphere = () => {
-        let lat = 40;
-        let longt = 40;
+        let lat = 20;
+        let longt = 20;
         let r = 0.5;
         let vertices = [];
         let indices = [];

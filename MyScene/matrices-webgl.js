@@ -197,6 +197,16 @@
     //     }
     // ];
 
+        // new Shape({
+        //     color: { r: 0.0, g: 0.5, b: 0.0 },
+        //     translate: {tx: 0.5, ty: 0.5, tz: 0.5},
+        //     scale: {sx: 1, sy: 1, sz: 1},
+        //     angle: 20,
+        //     axis: { x: -1.0, y: -0.5, z: 1.0 },
+        //     vertices: Shape.toRawTriangleArray(Shape.pyramid()),
+        //     mode: gl.LINES
+        // }),
+
         new Shape({
             colors: [].concat(
             [ 1.0, 0.0, 0.0 ],
@@ -236,10 +246,10 @@
             [ 0.0, 1.0, 1.0 ],
             [ 0.0, 1.0, 1.0 ]
           ),
-            translate: {tx: 1, ty: 1, tz: 0},
-            scale: {x: 1, y: 1, z: 1},
-            rotate: 0,
-            axis: { x: -1.0, y: -0.5, z: 1.0 },
+            translate: {tx: 0, ty: 0, tz: 0},
+            scale: {sx: 1, sy: 1, sz: 1},
+            angle: 5,
+            axis: { x: 1.0, y: 1.0, z: 1.0 },
             vertices: Shape.toRawTriangleArray(Shape.cube()),
             mode: gl.TRIANGLES
         })
@@ -307,17 +317,18 @@
     // model-view and projection, managed separately.
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
+    let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
     let translateMatrix = gl.getUniformLocation(shaderProgram, "translateMatrix");
 
     var normalVector = gl.getUniformLocation(shaderProgram, "normalVector");
     gl.enableVertexAttribArray(normalVector);
 
-    gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
-        [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-         0, 1, 0, 0, //      matrix should be available as a function.
-         0, 0, 1, 0,
-         0, 0, 0, 1]
-    ));
+    // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
+    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
+    //      0, 1, 0, 0, //      matrix should be available as a function.
+    //      0, 0, 1, 0,
+    //      0, 0, 0, 1]
+    // ));
 
     // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
     //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
@@ -351,12 +362,41 @@
                 shape.translate.ty,
                 shape.translate.tz
             );
-        // console.log(currentMatrix);
-        currentMatrix = currentMatrix.multiply(translate);
-        // console.log(translate);
-        // console.log(currentMatrix.conversion());
 
-        gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(currentMatrix.conversion()));
+        let rotate = Matrix.rotate(
+                currentRotation,
+                shape.axis.x,
+                shape.axis.y,
+                shape.axis.z
+            );
+
+        let scale = Matrix.scale(
+              shape.scale.sx,
+              shape.scale.sy,
+              shape.scale.sz
+            );
+
+        // let product = currentMatrix.multiply(parent);
+        let product = currentMatrix.multiply(translate).multiply(rotate).multiply(scale);
+
+        // console.log(currentMatrix.multiply(translate));
+        console.log("rotate", currentMatrix.multiply(rotate));
+        console.log("scale", currentMatrix.multiply(scale));
+
+        console.log(currentMatrix);
+        currentMatrix = currentMatrix.multiply(translate);
+        // currentMatrix = currentMatrix.multiply(multiplyMatrices);
+
+        console.log(translate);
+        console.log("product", product);
+
+        // gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(product.conversion()));
+        gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(product.conversion()));
+
+        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(product.conversion()));
+
+        // draws the square
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(new Matrix().conversion()));
 
         // Set the varying vertex coordinates.
         gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
@@ -374,6 +414,7 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, Matrix.translate().conversion());
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(product.conversion()));
 
         objectsToDraw.forEach(drawObject);
 
