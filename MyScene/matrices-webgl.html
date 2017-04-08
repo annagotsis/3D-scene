@@ -56,7 +56,7 @@
         void main(void) {
           // vec4 finalVertexPosition = transformMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
           //   gl_Position = finalVertexPosition * projectionMatrix;
-            gl_Position = modelViewMatrix * projectionMatrix * vec4(vertexPosition, 1.0);
+            gl_Position = modelViewMatrix * transformMatrix * vec4(vertexPosition, 1.0);
             finalVertexColor = vec4(vertexColor, 1.0);
         }
     </script>

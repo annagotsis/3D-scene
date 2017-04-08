@@ -14,57 +14,6 @@
      *     https://www.khronos.org/registry/OpenGL-Refpages/es1.1/xhtml/glRotate.xml
      */
 
-     let getRotationMatrix = (angle, x, y, z) => {
-         // In production code, this function should be associated
-         // with a matrix object with associated functions.
-         let axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
-         let s = Math.sin(angle * Math.PI / 180.0);
-         let c = Math.cos(angle * Math.PI / 180.0);
-         let oneMinusC = 1.0 - c;
-
-         // can use matrix to combine operations, can also get out of 2x2x2
-         // -form matrix for operation you want, and then multiply
-
-         // Normalize the axis vector of rotation.
-         x /= axisLength;
-         y /= axisLength;
-         z /= axisLength;
-
-         // Now we can calculate the other terms.
-         // "2" for "squared."
-         let x2 = x * x;
-         let y2 = y * y;
-         let z2 = z * z;
-         let xy = x * y;
-         let yz = y * z;
-         let xz = x * z;
-         let xs = x * s;
-         let ys = y * s;
-         let zs = z * s;
-
-         // GL expects its matrices in column major order.
-         return [
-             (x2 * oneMinusC) + c,
-             (xy * oneMinusC) + zs,
-             (xz * oneMinusC) - ys,
-             0.0,
-
-             (xy * oneMinusC) - zs,
-             (y2 * oneMinusC) + c,
-             (yz * oneMinusC) + xs,
-             0.0,
-
-             (xz * oneMinusC) + ys,
-             (yz * oneMinusC) - xs,
-             (z2 * oneMinusC) + c,
-             0.0,
-
-             0.0,
-             0.0,
-             0.0,
-             1.0
-         ];
-     };
     /*
      * This is another function that really should reside in a
      * separate library.  But, because the creation of that library
@@ -123,8 +72,17 @@
         // where implemented in this program).
 
         {
+            color: { r: 0.50, g: 0.25, b: 0.5 },
+            vertices: Shape.toRawTriangleArray(Shape.pyramid()),
+            mode: gl.TRIANGLES,
+            translate: {tx: 2, ty: 2, tz: 2},
+            scale: {sx: 1, sy: 1, sz: 1},
+            axis: { x: 1.0, y: 1.0, z: 1.0 },
+        },
+
+        {
             color: { r: 0.0, g: 0.5, b: 0.0 },
-            translate: {tx: 0.5, ty: 0.5, tz: 0.5},
+            translate: {tx: 2, ty: 2, tz: 2},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: 0.0, y: 1.0, z: 1.0 },
             vertices: Shape.toRawLineArray(Shape.sphere()),
@@ -244,27 +202,13 @@
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
     let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
 
-    // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(
-    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-    //      0, 1, 0, 0, //      matrix should be available as a function.
-    //      0, 0, 1, 0,
-    //      0, 0, 0, 1]
-    // ));
-
-    // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
-    //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-    //      0, 1, 0, 0, //      matrix should be available as a function.
-    //      0, 0, 1, 0,
-    //      0, 0, 0, 1]
-    // ));
-
     /*
      * Displays an individual object, including a transformation that now varies
      * for each object drawn.
      */
-    let drawObject = (shape, parent) => {
+    let drawObject = (object) => {
         // Set the varying colors.
-        gl.bindBuffer(gl.ARRAY_BUFFER, shape.colorBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
         gl.vertexAttribPointer(vertexColor, 3, gl.FLOAT, false, 0, 0);
 
         // Set up the model-view matrix, if an axis is included.  If not, we
@@ -277,28 +221,29 @@
         //      0, 0, 0, 1]
         // ));
 
-        let currentMatrix = parent || new Matrix();
+        let currentMatrix = new Matrix();
 
         let translate = Matrix.translate(
-                shape.translate.tx,
-                shape.translate.ty,
-                shape.translate.tz
+                object.translate.tx,
+                object.translate.ty,
+                object.translate.tz
             );
 
         let rotate = Matrix.rotate(
                 currentRotation,
-                shape.axis.x,
-                shape.axis.y,
-                shape.axis.z
+                object.axis.x,
+                object.axis.y,
+                object.axis.z
             );
 
         let scale = Matrix.scale(
-              shape.scale.sx,
-              shape.scale.sy,
-              shape.scale.sz
+              object.scale.sx,
+              object.scale.sy,
+              object.scale.sz
             );
 
-        let product = currentMatrix.multiply(translate).multiply(rotate).multiply(scale);
+        let rotated = currentMatrix.multiply(rotate);
+        let transformed = currentMatrix.multiply(translate).multiply(scale);
         // let product = currentMatrix.multiply(rotate);
 
         console.log("currentMatrix", currentMatrix);
@@ -308,22 +253,22 @@
 
         // currentMatrix = currentMatrix.multiply(translate);
 
-        console.log("product", product);
+        // console.log("product", product);
 
-        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(product.conversion()));
+        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
 
-        gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(product.conversion()));
+        gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
 
         // simply draws the shapes
         // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(new Matrix().conversion()));
 
         // Set the varying vertex coordinates.
-        gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, object.vertexBuffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(shape.mode, 0, shape.vertices.length / 3);
+        gl.drawArrays(object.mode, 0, object.vertices.length / 3);
 
         // console.log(shape.vertexBuffer);
-        console.log(shape.vertices);
+        // console.log(object.vertices);
 
         // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
         // gl.drawElements(shape.mode, 0, gl.UNSIGNED_BYTE, shape.vertices.length / 3)
@@ -336,6 +281,9 @@
     let drawScene = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Matrix().perspective(-2 *
+        //   (canvas.width / canvas.height), 2 * (canvas.width / canvas.height), 2, -2, 5, 2000).conversion())
 
         objectsToDraw.forEach(drawObject);
 
