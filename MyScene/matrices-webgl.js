@@ -122,14 +122,14 @@
         // to the scene (yes, a translation will also do the trick, if it
         // where implemented in this program).
 
-        // {
-        //     color: { r: 0.0, g: 0.5, b: 0.0 },
-        //     translate: {tx: 0.5, ty: 0.5, tz: 0.5},
-        //     scale: {sx: 1, sy: 1, sz: 1},
-        //     axis: { x: 0.0, y: 1.0, z: 1.0 },
-        //     vertices: Shape.toRawLineArray(Shape.sphere()),
-        //     mode: gl.LINES
-        // },
+        {
+            color: { r: 0.0, g: 0.5, b: 0.0 },
+            translate: {tx: 0.5, ty: 0.5, tz: 0.5},
+            scale: {sx: 1, sy: 1, sz: 1},
+            axis: { x: 0.0, y: 1.0, z: 1.0 },
+            vertices: Shape.toRawLineArray(Shape.sphere()),
+            mode: gl.LINES
+        },
 
         new Shape ({
             colors: [].concat(
@@ -299,10 +299,14 @@
             );
 
         let product = currentMatrix.multiply(translate).multiply(rotate).multiply(scale);
+        // let product = currentMatrix.multiply(rotate);
 
+        console.log("currentMatrix", currentMatrix);
         console.log("rotate", currentMatrix.multiply(rotate));
+        console.log("translate", currentMatrix.multiply(translate));
+        console.log("scale", currentMatrix.multiply(scale));
 
-        currentMatrix = currentMatrix.multiply(translate);
+        // currentMatrix = currentMatrix.multiply(translate);
 
         console.log("product", product);
 
