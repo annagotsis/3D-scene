@@ -48,21 +48,21 @@
             1,
             0,
             0,
-            0,
-
-            0,
-            1,
-            0,
-            0,
-
-            0,
-            0,
-            1,
-            0,
-
             tx,
+
+            0,
+            1,
+            0,
             ty,
+
+            0,
+            0,
+            1,
             tz,
+
+            0,
+            0,
+            0,
             1
           );
         return result;
@@ -136,7 +136,7 @@
         );
     };
 
-    Matrix.prototype.orthoMatrix = (left, right, bottom, top, near, far) => {
+    Matrix.orthoMatrix = (left, right, bottom, top, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -164,7 +164,7 @@
         );
     };
 
-    Matrix.prototype.perspective = (left, right, top, bottom, near, far) => {
+    Matrix.perspective = (left, right, top, bottom, near, far) => {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
@@ -191,6 +191,40 @@
         );
     };
 
+    Matrix.camera = function(ex, ey, ez, cx, cy, cz, ux, uy, uz) {
+        let result = new Matrix();
+
+        let e = new Vector(ex, ey, ez);
+        let c = new Vector(cx, cy, cz);
+        let u = new Vector(ux, uy, uz);
+
+        let f = e.subtract(c);
+        let s = u.cross(f);
+        let t = f.cross(s);
+
+        s.x,
+        s.y,
+        s.z,
+        -s.dot(e);
+
+        t.x,
+        t.y,
+        t.z,
+        -t.dot(e);
+
+        f.x,
+        f.y,
+        f.z,
+        -f.dot(e);
+
+        0;
+        0;
+        0;
+        1;
+
+        return result;
+    };
+
     Matrix.prototype.conversion = function() {
         let result = [];
         for (let i = 0; i < 4; i += 1) {
@@ -202,16 +236,6 @@
         // console.log(result);
         return result;
     };
-    //     let result = [];
-    //     for (let i = 0; i < this.data.length; i++) {
-    //         for (let j = 0; j < this.data.length; j++) {
-    //             result.push(this.data[j][i]);
-    //         }
-    //     }
-    //     return result;
-    // };
-
-    // return Matrix;
 
     window.Matrix = Matrix;
 

@@ -52,11 +52,11 @@
         uniform mat4 projectionMatrix;
         uniform mat4 modelViewMatrix;
         uniform mat4 transformMatrix;
+        uniform mat4 cameraMatrix;
 
         void main(void) {
-          // vec4 finalVertexPosition = transformMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
-          //   gl_Position = finalVertexPosition * projectionMatrix;
-            gl_Position = modelViewMatrix * transformMatrix * vec4(vertexPosition, 1.0);
+          vec4 finalVertexPosition = transformMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
+            gl_Position = finalVertexPosition * projectionMatrix;
             finalVertexColor = vec4(vertexColor, 1.0);
         }
     </script>
@@ -79,6 +79,7 @@
 
     <!-- This script sets up the specific scene for this page. -->
       <script src="Matrix.js"></script>
+      <script src="vector.js"></script>
     <script src="matrices-webgl.js"></script>
   </body>
 </html>

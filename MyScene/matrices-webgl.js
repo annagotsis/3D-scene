@@ -4,50 +4,6 @@
  */
 ((canvas) => {
 
-    /*
-     * This code does not really belong here: it should live
-     * in a separate library of matrix and transformation
-     * functions.  It is here only to show you how matrices
-     * can be used with GLSL.
-     *
-     * Based on the original glRotate reference:
-     *     https://www.khronos.org/registry/OpenGL-Refpages/es1.1/xhtml/glRotate.xml
-     */
-
-    /*
-     * This is another function that really should reside in a
-     * separate library.  But, because the creation of that library
-     * is part of the student course work, we leave it here for
-     * later refactoring and adaptation by students.
-     */
-    let getOrthoMatrix = (left, right, bottom, top, zNear, zFar) => {
-        let width = right - left;
-        let height = top - bottom;
-        let depth = zFar - zNear;
-
-        return [
-            2.0 / width,
-            0.0,
-            0.0,
-            0.0,
-
-            0.0,
-            2.0 / height,
-            0.0,
-            0.0,
-
-            0.0,
-            0.0,
-            -2.0 / depth,
-            0.0,
-
-            -(right + left) / width,
-            -(top + bottom) / height,
-            -(zFar + zNear) / depth,
-            1.0
-        ];
-    };
-
     // Grab the WebGL rendering context.
     let gl = GLSLUtilities.getGL(canvas);
     if (!gl) {
@@ -75,14 +31,14 @@
             color: { r: 0.50, g: 0.25, b: 0.5 },
             vertices: Shape.toRawTriangleArray(Shape.pyramid()),
             mode: gl.TRIANGLES,
-            translate: {tx: 2, ty: 2, tz: 2},
+            translate: {tx: 0, ty: 0, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: 1.0, y: 1.0, z: 1.0 },
         },
 
         {
             color: { r: 0.0, g: 0.5, b: 0.0 },
-            translate: {tx: 2, ty: 2, tz: 2},
+            translate: {tx: -0.5, ty: -0.5, tz: -0.5},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: 0.0, y: 1.0, z: 1.0 },
             vertices: Shape.toRawLineArray(Shape.sphere()),
@@ -128,7 +84,7 @@
             [ 0.0, 1.0, 1.0 ],
             [ 0.0, 1.0, 1.0 ]
           ),
-            translate: {tx: 0, ty: 0, tz: 0},
+            translate: {tx: 0.5, ty: 0.5, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
             angle: 0,
             axis: { x: 1.0, y: 1.0, z: 1.0 },
@@ -201,6 +157,8 @@
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
     let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    let cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
+
 
     /*
      * Displays an individual object, including a transformation that now varies
@@ -210,16 +168,6 @@
         // Set the varying colors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
         gl.vertexAttribPointer(vertexColor, 3, gl.FLOAT, false, 0, 0);
-
-        // Set up the model-view matrix, if an axis is included.  If not, we
-        // specify the identity matrix.
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(shape.axis ?
-        //     getRotationMatrix(currentRotation, shape.axis.x, shape.axis.y, shape.axis.z) :
-        //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-        //      0, 1, 0, 0, //      matrix should be available as a function.
-        //      0, 0, 1, 0,
-        //      0, 0, 0, 1]
-        // ));
 
         let currentMatrix = new Matrix();
 
@@ -251,13 +199,11 @@
         console.log("translate", currentMatrix.multiply(translate));
         console.log("scale", currentMatrix.multiply(scale));
 
-        // currentMatrix = currentMatrix.multiply(translate);
-
-        // console.log("product", product);
-
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
 
         gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
+
+        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -5, 0, 5, 0).conversion());
 
         // simply draws the shapes
         // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(new Matrix().conversion()));
@@ -266,12 +212,6 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, object.vertexBuffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
         gl.drawArrays(object.mode, 0, object.vertices.length / 3);
-
-        // console.log(shape.vertexBuffer);
-        // console.log(object.vertices);
-
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
-        // gl.drawElements(shape.mode, 0, gl.UNSIGNED_BYTE, shape.vertices.length / 3)
 
     };
 
@@ -282,8 +222,10 @@
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Matrix().perspective(-2 *
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, Matrix.perspective(-2 *
         //   (canvas.width / canvas.height), 2 * (canvas.width / canvas.height), 2, -2, 5, 2000).conversion())
+
+        // gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(-4, -4, 0, 0, 0, -5, 0, 5, 0).conversion());
 
         objectsToDraw.forEach(drawObject);
 
@@ -297,14 +239,14 @@
     // We keep the vertical range fixed, but change the horizontal range
     // according to the aspect ratio of the canvas.  We can also expand
     // the z range now.
-    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(getOrthoMatrix(
+    gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.orthoMatrix(
         -2 * (canvas.width / canvas.height),
         2 * (canvas.width / canvas.height),
         -2,
         2,
         -10,
         10
-    )));
+    ).conversion()));
 
     /*
      * Animates the scene.
