@@ -83,8 +83,8 @@
     };
 
     shape.sphere = () => {
-        let lat = 20;
-        let longt = 20;
+        let lat = 40;
+        let longt = 40;
         let r = 0.5;
         let vertices = [];
         let indices = [];

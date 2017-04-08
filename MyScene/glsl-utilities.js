@@ -18,6 +18,13 @@
         return buffer;
     };
 
+    // let initIndexBuffer = (gl, indices) => {
+    //     let indexBuffer = gl.createBuffer();
+    //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    //     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Unit16Array(indices), gl.STATIC_DRAW);
+    //     return indexBuffer;
+    // }
+
     /*
      * Sets up a GLSL shader of the given type.
      */
@@ -88,6 +95,7 @@
     window.GLSLUtilities = {
         getGL,
         initVertexBuffer,
+        // initIndexBuffer,
         compileShader,
         linkShaderProgram,
         initSimpleShaderProgram

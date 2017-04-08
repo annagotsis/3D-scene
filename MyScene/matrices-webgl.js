@@ -13,55 +13,58 @@
      * Based on the original glRotate reference:
      *     https://www.khronos.org/registry/OpenGL-Refpages/es1.1/xhtml/glRotate.xml
      */
-    let getRotationMatrix = (angle, x, y, z) => {
-        // In production code, this function should be associated
-        // with a matrix object with associated functions.
-        let axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
-        let s = Math.sin(angle * Math.PI / 180.0);
-        let c = Math.cos(angle * Math.PI / 180.0);
-        let oneMinusC = 1.0 - c;
 
-        // Normalize the axis vector of rotation.
-        x /= axisLength;
-        y /= axisLength;
-        z /= axisLength;
+     let getRotationMatrix = (angle, x, y, z) => {
+         // In production code, this function should be associated
+         // with a matrix object with associated functions.
+         let axisLength = Math.sqrt((x * x) + (y * y) + (z * z));
+         let s = Math.sin(angle * Math.PI / 180.0);
+         let c = Math.cos(angle * Math.PI / 180.0);
+         let oneMinusC = 1.0 - c;
 
-        // Now we can calculate the other terms.
-        // "2" for "squared."
-        let x2 = x * x;
-        let y2 = y * y;
-        let z2 = z * z;
-        let xy = x * y;
-        let yz = y * z;
-        let xz = x * z;
-        let xs = x * s;
-        let ys = y * s;
-        let zs = z * s;
+         // can use matrix to combine operations, can also get out of 2x2x2
+         // -form matrix for operation you want, and then multiply
 
-        // GL expects its matrices in column major order.
-        return [
-            (x2 * oneMinusC) + c,
-            (xy * oneMinusC) + zs,
-            (xz * oneMinusC) - ys,
-            0.0,
+         // Normalize the axis vector of rotation.
+         x /= axisLength;
+         y /= axisLength;
+         z /= axisLength;
 
-            (xy * oneMinusC) - zs,
-            (y2 * oneMinusC) + c,
-            (yz * oneMinusC) + xs,
-            0.0,
+         // Now we can calculate the other terms.
+         // "2" for "squared."
+         let x2 = x * x;
+         let y2 = y * y;
+         let z2 = z * z;
+         let xy = x * y;
+         let yz = y * z;
+         let xz = x * z;
+         let xs = x * s;
+         let ys = y * s;
+         let zs = z * s;
 
-            (xz * oneMinusC) + ys,
-            (yz * oneMinusC) - xs,
-            (z2 * oneMinusC) + c,
-            0.0,
+         // GL expects its matrices in column major order.
+         return [
+             (x2 * oneMinusC) + c,
+             (xy * oneMinusC) + zs,
+             (xz * oneMinusC) - ys,
+             0.0,
 
-            0.0,
-            0.0,
-            0.0,
-            1.0
-        ];
-    };
+             (xy * oneMinusC) - zs,
+             (y2 * oneMinusC) + c,
+             (yz * oneMinusC) + xs,
+             0.0,
 
+             (xz * oneMinusC) + ys,
+             (yz * oneMinusC) - xs,
+             (z2 * oneMinusC) + c,
+             0.0,
+
+             0.0,
+             0.0,
+             0.0,
+             1.0
+         ];
+     };
     /*
      * This is another function that really should reside in a
      * separate library.  But, because the creation of that library
@@ -121,93 +124,14 @@
 
         // {
         //     color: { r: 0.0, g: 0.5, b: 0.0 },
-        //     vertices: Shape.toRawLineArray(Shape.sphere()),
-        //     mode: gl.LINES,
-        //     axis: { x: 3.0, y: 2.0, z: 1.0 }
-        // },
-        //
-        // {
-        //     color: { r: 0.0, g: 0.5, b: 0.0 },
-        //     vertices: Shape.toRawLineArray(Shape.pyramid()),
-        //     mode: gl.LINES,
-        //     axis: { x: 0.0, y: 1.0, z: 1.0 }
-        // },
-        //
-        //
-        // // Something that would have been clipped before.
-        // {
-        //     vertices: [].concat(
-        //         [ 3.0, 1.5, 0.0 ],
-        //         [ 2.0, -1.5, 0.0 ],
-        //         [ 4.0, -1.5, 0.0 ]
-        //     ),
-        //     colors: [].concat(
-        //         [ 1.0, 0.5, 0.0 ],
-        //         [ 0.0, 0.0, 0.5 ],
-        //         [ 0.5, 0.75, 0.5 ]
-        //     ),
-        //     mode: gl.TRIANGLES,
-        //     axis: { x: -0.5, y: 1.0, z: 0.0 }
-        // },
-
-        // Show off the new shape.
-    //     {
-    //         vertices: Shapes.toRawTriangleArray(Shape.cube()),
-    //         // 12 triangles in all.
-    //         colors: [].concat(
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 1.0, 0.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 1.0, 0.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 0.0, 0.0, 1.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 1.0, 0.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 1.0, 0.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ],
-    //             [ 0.0, 1.0, 1.0 ]
-    //         ),
-    //         mode: gl.TRIANGLES,
-    //         axis: { x: 1.0, y: 1.0, z: 1.0 }
-    //     }
-    // ];
-
-        // new Shape({
-        //     color: { r: 0.0, g: 0.5, b: 0.0 },
         //     translate: {tx: 0.5, ty: 0.5, tz: 0.5},
         //     scale: {sx: 1, sy: 1, sz: 1},
-        //     angle: 6,
-        //     axis: { x: -1.0, y: -0.5, z: 1.0 },
-        //     vertices: Shape.toRawTriangleArray(Shape.pyramid()),
-        //     mode: gl.TRIANGLES
-        // }),
+        //     axis: { x: 0.0, y: 1.0, z: 1.0 },
+        //     vertices: Shape.toRawLineArray(Shape.sphere()),
+        //     mode: gl.LINES
+        // },
 
-        new Shape({
+        new Shape ({
             colors: [].concat(
             [ 1.0, 0.0, 0.0 ],
             [ 1.0, 0.0, 0.0 ],
@@ -252,6 +176,7 @@
             axis: { x: 1.0, y: 1.0, z: 1.0 },
             vertices: Shape.toRawTriangleArray(Shape.cube()),
             mode: gl.TRIANGLES
+
         })
     ];
 
@@ -333,10 +258,6 @@
     //      0, 0, 0, 1]
     // ));
 
-    // gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(product.conversion()));
-    //
-    // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(product.conversion()));
-
     /*
      * Displays an individual object, including a transformation that now varies
      * for each object drawn.
@@ -378,31 +299,30 @@
             );
 
         let product = currentMatrix.multiply(translate).multiply(rotate).multiply(scale);
-        // let product = currentMatrix.multiply(translate).multiply(rotate);
 
-        // console.log(currentMatrix.multiply(translate));
         console.log("rotate", currentMatrix.multiply(rotate));
-        // console.log("scale", currentMatrix.multiply(scale));
 
-        // console.log(currentMatrix);
         currentMatrix = currentMatrix.multiply(translate);
-        // currentMatrix = currentMatrix.multiply(multiplyMatrices);
 
-        // console.log(translate);
         console.log("product", product);
 
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(product.conversion()));
 
         gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(product.conversion()));
 
-
-        // draws the square
+        // simply draws the shapes
         // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(new Matrix().conversion()));
 
         // Set the varying vertex coordinates.
         gl.bindBuffer(gl.ARRAY_BUFFER, shape.vertexBuffer);
         gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
         gl.drawArrays(shape.mode, 0, shape.vertices.length / 3);
+
+        // console.log(shape.vertexBuffer);
+        console.log(shape.vertices);
+
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.indexBuffer);
+        // gl.drawElements(shape.mode, 0, gl.UNSIGNED_BYTE, shape.vertices.length / 3)
 
     };
 
