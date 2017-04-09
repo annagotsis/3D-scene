@@ -1,23 +1,10 @@
 // https://www.tutorialspoint.com/webgl/webgl_interactive_cube.htm
 
-/*
- * This module defines/generates vertex arrays for certain predefined shapes.
- * The "shapes" are returned as indexed vertices, with utility functions for
- * converting these into "raw" coordinate arrays.
- */
 (() => {
-
-    /*
-     * Returns the vertices for a small icosahedron.
-     */
-
+     // 3D Object class
     let shape = function (params) {
-      // currentLocation =
-      // currentVelocity
         this.color = params.color || {r: 0, g: 0, b: 0};
         this.colors = params.colors || {r: 0, g: 0, b: 0};
-      // currentAcceleration
-      // currentRotation
         this.translate = params.translate || {x: 0, y: 0, z: 0};
         this.scale = params.scale || {x: 1, y: 1, z: 1};
         this.angle = params.angle || 0;
@@ -26,11 +13,9 @@
         this.vertices = params.vertices || [];
         this.indices = params.indices || [];
         this.mode = params.mode;
-        // this.x = params.x || 0;
-        // this.y = params.y || 0;
-        // this.z = params.z || 0;
     };
 
+    // Mesh Makers
     shape.cube = () => {
         return {
             vertices: [
@@ -116,10 +101,7 @@
         };
     };
 
-    /*
-     * Utility function for turning indexed vertices into a "raw" coordinate array
-     * arranged as triangles.
-     */
+     // Polygon Mesh Functions
     shape.toRawTriangleArray = (indexedVertices) => {
         let result = [];
 
@@ -136,10 +118,6 @@
         return result;
     };
 
-    /*
-     * Utility function for turning indexed vertices into a "raw" coordinate array
-     * arranged as line segments.
-     */
     shape.toRawLineArray = (indexedVertices) => {
         let result = [];
 
@@ -160,14 +138,5 @@
         return result;
     };
 
-    // window.Cube = shape.cube;
-
     window.Shape = shape;
-    // window.Shapes = {
-    //     // cube,
-    //     // sphere,
-    //     // pyramid,
-    //     // toRawTriangleArray,
-    //     // toRawLineArray
-    // };
 })();

@@ -33,7 +33,7 @@
             mode: gl.TRIANGLES,
             translate: {tx: 0, ty: 0, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
-            axis: { x: 1.0, y: 1.0, z: 1.0 },
+            axis: { x: 0, y: 1.0, z: 1.0 },
         },
 
         {
@@ -86,8 +86,7 @@
           ),
             translate: {tx: 0.5, ty: 0.5, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
-            angle: 0,
-            axis: { x: 1.0, y: 1.0, z: 1.0 },
+            axis: { x: 1, y: 1, z: 0 },
             vertices: Shape.toRawTriangleArray(Shape.cube()),
             mode: gl.TRIANGLES
 
@@ -157,8 +156,7 @@
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
     let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
-    let cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
-
+    // let cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
 
     /*
      * Displays an individual object, including a transformation that now varies
@@ -190,9 +188,10 @@
               object.scale.sz
             );
 
-        let rotated = currentMatrix.multiply(rotate);
+
         let transformed = currentMatrix.multiply(translate).multiply(scale);
-        // let product = currentMatrix.multiply(rotate);
+        let rotated = transformed.multiply(rotate);
+
 
         console.log("currentMatrix", currentMatrix);
         console.log("rotate", currentMatrix.multiply(rotate));
@@ -200,10 +199,7 @@
         console.log("scale", currentMatrix.multiply(scale));
 
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
-
         gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
-
-        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -5, 0, 5, 0).conversion());
 
         // simply draws the shapes
         // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(new Matrix().conversion()));
@@ -221,12 +217,7 @@
     let drawScene = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, Matrix.perspective(-2 *
-        //   (canvas.width / canvas.height), 2 * (canvas.width / canvas.height), 2, -2, 5, 2000).conversion())
-
-        // gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(-4, -4, 0, 0, 0, -5, 0, 5, 0).conversion());
-
+        
         objectsToDraw.forEach(drawObject);
 
         // All done.
