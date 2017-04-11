@@ -26,24 +26,8 @@
         }
         return resultMatrix;
     };
-    //     let result = new Matrix();
-    //     for (let i = 0; i <= this.data.length; i++) {
-    //         let Matrix1 = this.data[i];
-    //         for (let c = 0; c <= Matrix1.length; c++) {
-    //             let product = 0;
-    //             for (let j = 0; j < this.data.length; j++) {
-    //                 product += this.data[i][j] * Matrix2.data[j][c];
-    //             }
-    //             result.data[i][c] = product;
-    //         }
-    //     }
-    //     return result;
-    // };
 
     Matrix.translate = function (tx, ty, tz) {
-        // tx = tx || 0;
-        // ty = ty || 0;
-        // tz = tz || 0;
         let result = new Matrix(
             1,
             0,
