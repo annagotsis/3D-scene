@@ -3,6 +3,9 @@
 (() => {
      // 3D Object class
     let shape = function (params) {
+        this.x = params.x || 0;
+        this.y = params.y || 0;
+        this.z = params.z || 0;
         this.color = params.color || {r: 0, g: 0, b: 0};
         this.colors = params.colors || {r: 0, g: 0, b: 0};
         this.translate = params.translate || {x: 0, y: 0, z: 0};
@@ -13,6 +16,10 @@
         this.vertices = params.vertices || [];
         this.indices = params.indices || [];
         this.mode = params.mode;
+        this.normals = params.normals || [];
+        this.specularColor = params.specularColor || {r: 1.0, g: 1.0, b: 1.0};
+        this.specularColors = params.specularColors || null;
+        this.shininess = params.shininess || 16;
     };
 
     // Mesh Makers

@@ -29,7 +29,7 @@
 
         {
             color: { r: 0.50, g: 0.25, b: 0.5 },
-            vertices: Shape.toRawLineArray(Shape.pyramid()),
+            vertices: Mesh.toRawLineArray(Shape.pyramid()),
             mode: gl.LINES,
             translate: {tx: 0, ty: 0, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
@@ -41,7 +41,7 @@
             translate: {tx: -1.5, ty: 0.35, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: 1.0, y: 1.0, z: 1.0 },
-            vertices: Shape.toRawLineArray(Shape.sphere()),
+            vertices: Mesh.toRawLineArray(Shape.sphere()),
             mode: gl.LINES
         },
 
@@ -87,7 +87,7 @@
             translate: {tx: 0.5, ty: 0.5, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: 1, y: 1, z: 0 },
-            vertices: Shape.toRawTriangleArray(Shape.cube()),
+            vertices: Mesh.toRawTriangleArray(Shape.cube()),
             mode: gl.TRIANGLES
 
         }),
@@ -134,7 +134,7 @@
             translate: {tx: -0.5, ty: -0.5, tz: 0},
             scale: {sx: 1, sy: 1, sz: 1},
             axis: { x: -1, y: -1, z: -1 },
-            vertices: Shape.toRawTriangleArray(Shape.cube()),
+            vertices: Mesh.toRawTriangleArray(Shape.cube()),
             mode: gl.TRIANGLES
 
         })
