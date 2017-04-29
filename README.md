@@ -1,3 +1,5 @@
+-RELEVANT FILES: MyScene -> shapes.js, Matrix.js, matrices-webgl(0407b), hello-webgl(0407a)
+
 **CMSI 371** Computer Graphics, Spring 2017
 
 # 3D Scene Assignments
