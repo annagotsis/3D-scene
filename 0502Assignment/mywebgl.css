@@ -1,5 +1,6 @@
 canvas {
     border: solid 1px rgb(200, 200, 255);
+    background:linear-gradient(to bottom, rgba(240,183,161,1) 0%,rgba(140,51,16,1) 50%,rgba(117,34,1,1) 51%,rgba(191,110,78,1) 100%); 
     display: block;
     margin-left: auto;
     margin-right: auto;

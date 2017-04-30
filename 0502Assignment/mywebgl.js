@@ -20,129 +20,74 @@
 
     // Build the objects to display.
     let objectsToDraw = [
+
+        // planets
+        // sun
         {
             specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 10,
-            normals: Mesh.toNormalArray(Shape.pyramid()),
-            color: { r: 0.50, g: 0.25, b: 0.5 },
-            vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
-            mode: gl.TRIANGLES,
-            translate: {tx: 0, ty: 0, tz: 0},
-            scale: {sx: 0.7, sy: 0.7, sz: 0.7},
-            axis: { x: 0, y: 1.0, z: 1.0 }
+            shininess: 20,
+            normals: Mesh.toNormalArray(Shape.sphere()),
+            color: { r: 1, g: 0.85, b: 0.3 },
+            translate: {tx: -3.3, ty: 1.2, tz: 0},
+            scale: {sx: 0.75, sy: 0.75, sz: 0.75},
+            axis: { x: -3.3, y: 1.2, z: 0},
+            currentRotation: 3,
+            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+            mode: gl.TRIANGLES
         },
-
+        // planet blue
+        {
+            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
+            shininess: 20,
+            normals: Mesh.toNormalArray(Shape.sphere()),
+            color: { r: 0, g: 1, b: 1 },
+            translate: {tx: -1, ty: 1.2, tz: 0},
+            scale: {sx: 0.6, sy: 0.6, sz: 0.6},
+            axis: { x: -1, y: 1.2, z: 0 },
+            currentRotation: 3,
+            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+            mode: gl.TRIANGLES
+        },
+        // planet red
         {
             specularColor: { r: 1.0, g: 1.0, b: 1.0 },
             shininess: 10,
             normals: Mesh.toNormalArray(Shape.sphere()),
-            color: { r: 0.6, g: 0.2, b: 0.6 },
-            translate: {tx: -1.5, ty: 0.35, tz: 0},
-            scale: {sx: 1, sy: 1, sz: 1},
-            axis: { x: 1.0, y: 1.0, z: 1.0 },
+            color: { r: 1, g: 0, b: 0 },
+            translate: {tx: 1.3, ty: 1.2, tz: 0},
+            scale: {sx: 0.7, sy: 0.7, sz: 0.7},
+            axis: { x: 1.3, y: 1.2, z: 0 },
+            currentRotation: 3,
             vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-            mode: gl.LINES
+            mode: gl.TRIANGLES
+        },
+        // planet ship is on
+        {
+            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
+            shininess: 20,
+            normals: Mesh.toNormalArray(Shape.sphere()),
+            color: { r: 0, g: 1, b: 0 },
+            translate: {tx: -0.4, ty: -6.65, tz: 0},
+            scale: {sx: 5, sy: 5, sz: 5},
+            axis: { x: -0.4, y: -6.65, z: 0 },
+            currentRotation: 0,
+            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+            mode: gl.TRIANGLES
         },
 
-        // new Shape ({
-        //     colors: [].concat(
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 1.0, 0.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 1.0, 0.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 0.0, 0.0, 1.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 1.0, 0.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 1.0, 0.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ],
-        //     [ 0.0, 1.0, 1.0 ]
-        //   ),
-        //     specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-        //     shininess: 10,
-        //     normals: Mesh.toNormalArray(Shape.cube()),
-        //     translate: {tx: 0.5, ty: 0.5, tz: 0},
-        //     scale: {sx: 0.6, sy: 0.6, sz: 0.6},
-        //     axis: { x: 1, y: 1, z: 0 },
-        //     vertices: Mesh.toRawTriangleArray(Shape.cube()),
-        //     mode: gl.TRIANGLES
-        //
-        // }),
-        //
-        // new Shape ({
-        //     colors: [].concat(
-        //     [ 0, 255, 0],
-        //     [ 0, 255, 0],
-        //     [ 0, 255, 0],
-        //     [ 0, 255, 0],
-        //     [ 0, 255, 0],
-        //     [ 0, 255, 0],
-        //     [ 255, 0, 255],
-        //     [ 255, 0, 255 ],
-        //     [ 255, 0, 255 ],
-        //     [ 255, 0, 255 ],
-        //     [ 255, 0, 255],
-        //     [ 255, 0, 255 ],
-        //     [ 0, 153, 255 ],
-        //     [ 0, 153, 255 ],
-        //     [ 0, 153, 255 ],
-        //     [ 0, 102, 255 ],
-        //     [ 0, 102, 255 ],
-        //     [ 0, 102, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 0, 0, 255 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 0, 0 ],
-        //     [ 255, 255, 0 ],
-        //     [ 255, 255, 0 ],
-        //     [ 255, 255, 0 ],
-        //     [ 255, 255, 0 ],
-        //     [ 255, 255, 0 ],
-        //     [ 255, 255, 0 ]
-        //   ),
-        //     specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-        //     shininess: 10,
-        //     normals: Mesh.toNormalArray(Shape.cube()),
-        //     translate: {tx: -0.5, ty: -0.5, tz: 0},
-        //     scale: {sx: 0.6, sy: 0.6, sz: 0.6},
-        //     axis: { x: -1, y: -1, z: -1 },
-        //     vertices: Mesh.toRawTriangleArray(Shape.cube()),
-        //     mode: gl.TRIANGLES
-        //
-        // })
+        // ship
+        {
+            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
+            shininess: 6,
+            normals: Mesh.toNormalArray(Shape.pyramid()),
+            color: { r: 0.50, g: 0.25, b: 0.5 },
+            vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
+            mode: gl.TRIANGLES,
+            currentRotation: 0,
+            translate: {tx: 0, ty: -1.6, tz: 0},
+            scale: {sx: 0.4, sy: 0.4, sz: 0.4},
+            axis: { x: 0, y: 1.0, z: 1.0 }
+        }
     ];
     console.log(objectsToDraw);
 
@@ -226,8 +171,8 @@
     // Finally, we come to the typical setup for transformation matrices:
     // model-view and projection, managed separately.
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
-    let xRotationMatrix = gl.getUniformLocation(shaderProgram, "xRotationMatrix");
-    let yRotationMatrix = gl.getUniformLocation(shaderProgram, "yRotationMatrix");
+    // let xRotationMatrix = gl.getUniformLocation(shaderProgram, "xRotationMatrix");
+    // let yRotationMatrix = gl.getUniformLocation(shaderProgram, "yRotationMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
 
     // Note the additional variables.
@@ -237,6 +182,7 @@
     let shininess = gl.getUniformLocation(shaderProgram, "shininess");
 
     let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    let cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
 
     /*
      * Displays an individual object, including a transformation that now varies
@@ -261,12 +207,12 @@
                object.translate.tz
            );
 
-        // let rotate = Matrix.rotate(
-        //        currentRotation,
-        //        object.axis.x,
-        //        object.axis.y,
-        //        object.axis.z
-        //    );
+        let rotate = Matrix.rotate(
+            object.currentRotation * currentRotation,
+            object.axis.x,
+            object.axis.y,
+            object.axis.z
+        );
 
         let scale = Matrix.scale(
              object.scale.sx,
@@ -276,8 +222,8 @@
 
 
         let transformed = currentMatrix.multiply(translate).multiply(scale);
-        // let rotated = transformed.multiply(rotate);
 
+        let rotated = transformed.multiply(rotate);
 
         // console.log("currentMatrix", currentMatrix);
         // // console.log("rotate", currentMatrix.multiply(rotate));
@@ -285,19 +231,8 @@
         // console.log("scale", currentMatrix.multiply(scale));
 
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
-        // gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
+        gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
 
-        // Set up the model-view matrix, if an axis is included.  If not, we
-        // specify the identity matrix.
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.rotation ?
-        //     getRotationMatrix(object.rotation.theta, object.rotation.x, object.rotation.y, object.rotation.z) :
-        //     [1, 0, 0, 0, // N.B. In a full-fledged matrix library, the identity
-        //      0, 1, 0, 0, //      matrix should be available as a function.
-        //      0, 0, 1, 0,
-        //      0, 0, 0, 1]
-        // ));
-
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(Matrix.rotate().conversion()));
 
         // Set the varying normal vectors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
@@ -312,19 +247,21 @@
     /*
      * Displays the scene.
      */
-    let rotationAroundX = 0.0;
-    let rotationAroundY = 0.0;
+    // let rotationAroundX = 0.0;
+    // let rotationAroundY = 0.0;
     let drawScene = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -1, 0, 1, 0).conversion());
+
         // Set the overall rotation.
-        gl.uniformMatrix4fv(xRotationMatrix, gl.FALSE, new Float32Array(
-            Matrix.rotate(rotationAroundX, 1.0, 0.0, 0.0).conversion()
-        ));
-        gl.uniformMatrix4fv(yRotationMatrix, gl.FALSE, new Float32Array(
-            Matrix.rotate(rotationAroundY, 0.0, 1.0, 0.0).conversion()
-        ));
+        // gl.uniformMatrix4fv(xRotationMatrix, gl.FALSE, new Float32Array(
+        //     Matrix.rotate(rotationAroundX, 1.0, 0.0, 0.0).conversion()
+        // ));
+        // gl.uniformMatrix4fv(yRotationMatrix, gl.FALSE, new Float32Array(
+        //     Matrix.rotate(rotationAroundY, 0.0, 1.0, 0.0).conversion()
+        // ));
 
         objectsToDraw.forEach(drawObject);
 
@@ -335,16 +272,16 @@
     /*
      * Performs rotation calculations.
      */
-    let xDragStart;
-    let yDragStart;
-    let xRotationStart;
-    let yRotationStart;
-
-    let rotateScene = (event) => {
-        rotationAroundX = xRotationStart - yDragStart + event.clientY;
-        rotationAroundY = yRotationStart - xDragStart + event.clientX;
-        drawScene();
-    };
+    // let xDragStart;
+    // let yDragStart;
+    // let xRotationStart;
+    // let yRotationStart;
+    //
+    // let rotateScene = (event) => {
+    //     rotationAroundX = xRotationStart - yDragStart + event.clientY;
+    //     rotationAroundY = yRotationStart - xDragStart + event.clientX;
+    //     drawScene();
+    // };
 
     // Because our canvas element will not change size (in this program),
     // we can set up the projection matrix once, and leave it at that.
@@ -353,29 +290,82 @@
     // according to the aspect ratio of the canvas.  We can also expand
     // the z range now.
     gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.orthoMatrix(
-        -2 * (canvas.width / canvas.height),
-        2 * (canvas.width / canvas.height),
-        -2,
-        2,
+        -4 * (canvas.width / canvas.height),
+        4 * (canvas.width / canvas.height),
+        -4,
+        4,
         -10,
         10
     ).conversion()));
 
     // Set up our one light source and its colors.
-    gl.uniform4fv(lightPosition, [500.0, 1000.0, 100.0, 1.0]);
+    gl.uniform4fv(lightPosition, [-1500.0, 1000.0, 100.0, 1.0]);
     gl.uniform3fv(lightDiffuse, [1.0, 1.0, 1.0]);
     gl.uniform3fv(lightSpecular, [1.0, 1.0, 1.0]);
 
-    // Instead of animation, we do interaction: let the mouse control rotation.
-    $(canvas).mousedown((event) => {
-        xDragStart = event.clientX;
-        yDragStart = event.clientY;
-        xRotationStart = rotationAroundX;
-        yRotationStart = rotationAroundY;
-        $(canvas).mousemove(rotateScene);
-    }).mouseup((event) => {
-        $(canvas).unbind("mousemove");
+
+    let animationActive = false;
+    let currentRotation = 0.0;
+    let previousTimestamp = null;
+
+    const FRAMES_PER_SECOND = 60;
+    const MILLISECONDS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
+
+    const DEGREES_PER_MILLISECOND = 0.033;
+    const FULL_CIRCLE = 360.0;
+
+    let advanceScene = (timestamp) => {
+        // Check if the user has turned things off.
+        if (!animationActive) {
+            return;
+        }
+
+        // Initialize the timestamp.
+        if (!previousTimestamp) {
+            previousTimestamp = timestamp;
+            window.requestAnimationFrame(advanceScene);
+            return;
+        }
+
+        // Check if it's time to advance.
+        var progress = timestamp - previousTimestamp;
+        if (progress < MILLISECONDS_PER_FRAME) {
+            // Do nothing if it's too soon.
+            window.requestAnimationFrame(advanceScene);
+            return;
+        }
+
+        // All clear.
+        currentRotation += DEGREES_PER_MILLISECOND * progress;
+        drawScene();
+        if (currentRotation >= FULL_CIRCLE) {
+            currentRotation -= FULL_CIRCLE;
+        }
+
+        // Request the next frame.
+        previousTimestamp = timestamp;
+        window.requestAnimationFrame(advanceScene);
+    };
+
+    $(canvas).click(() => {
+        animationActive = !animationActive;
+        if (animationActive) {
+            previousTimestamp = null;
+            window.requestAnimationFrame(advanceScene);
+        }
     });
+
+
+    // Instead of animation, we do interaction: let the mouse control rotation.
+    // $(canvas).mousedown((event) => {
+    //     xDragStart = event.clientX;
+    //     yDragStart = event.clientY;
+    //     xRotationStart = rotationAroundX;
+    //     yRotationStart = rotationAroundY;
+    //     $(canvas).mousemove(rotateScene);
+    // }).mouseup((event) => {
+    //     $(canvas).unbind("mousemove");
+    // });
 
     // Draw the initial scene.
     drawScene();

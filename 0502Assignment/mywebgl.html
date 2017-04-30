@@ -56,6 +56,8 @@
 
       // The should-now-be-familiar matrices.
       uniform mat4 projectionMatrix;
+      uniform mat4 transformMatrix;
+      uniform mat4 cameraMatrix;
       uniform mat4 modelViewMatrix;
       uniform mat4 xRotationMatrix;
       uniform mat4 yRotationMatrix;
@@ -90,9 +92,10 @@
           // We now defer all color calculations to the fragment shader.
           fragmentDiffuseColor = vertexDiffuseColor;
           fragmentSpecularColor = vertexSpecularColor;
-          gl_Position = projectionMatrix *
-                  xRotationMatrix * yRotationMatrix *
-                  modelViewMatrix * vec4(2.0 * vertexPosition, 1.0);
+
+          vec4 finalVertexPosition = transformMatrix * modelViewMatrix * vec4(3.0 * vertexPosition, 1.0);
+          gl_Position = projectionMatrix * finalVertexPosition * cameraMatrix;
+          // gl_Position = projectionMatrix * cameraMatrix * modelViewMatrix * vec4(2.0 * vertexPosition, 1.0);
       }
     </script>
 
