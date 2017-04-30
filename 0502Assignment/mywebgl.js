@@ -32,6 +32,7 @@
             scale: {sx: 0.75, sy: 0.75, sz: 0.75},
             axis: { x: -3.3, y: 1.2, z: 0},
             currentRotation: 3,
+            angle: 40,
             vertices: Mesh.toRawTriangleArray(Shape.sphere()),
             mode: gl.TRIANGLES
         },
@@ -65,7 +66,7 @@
         {
             specularColor: { r: 1.0, g: 1.0, b: 1.0 },
             shininess: 20,
-            normals: Mesh.toNormalArray(Shape.sphere()),
+            normals: Mesh.toVertexNormalArray(Shape.sphere()),
             color: { r: 0, g: 1, b: 0 },
             translate: {tx: -0.4, ty: -6.65, tz: 0},
             scale: {sx: 5, sy: 5, sz: 5},
@@ -80,7 +81,7 @@
             specularColor: { r: 1.0, g: 1.0, b: 1.0 },
             shininess: 6,
             normals: Mesh.toNormalArray(Shape.pyramid()),
-            color: { r: 0.50, g: 0.25, b: 0.5 },
+            color: { r: 1, g: 0, b: 1 },
             vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
             mode: gl.TRIANGLES,
             currentRotation: 0,
@@ -220,19 +221,12 @@
              object.scale.sz
            );
 
-
         let transformed = currentMatrix.multiply(translate).multiply(scale);
 
         let rotated = transformed.multiply(rotate);
 
-        // console.log("currentMatrix", currentMatrix);
-        // // console.log("rotate", currentMatrix.multiply(rotate));
-        // console.log("translate", currentMatrix.multiply(translate));
-        // console.log("scale", currentMatrix.multiply(scale));
-
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
         gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
-
 
         // Set the varying normal vectors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
@@ -302,7 +296,6 @@
     gl.uniform4fv(lightPosition, [-1500.0, 1000.0, 100.0, 1.0]);
     gl.uniform3fv(lightDiffuse, [1.0, 1.0, 1.0]);
     gl.uniform3fv(lightSpecular, [1.0, 1.0, 1.0]);
-
 
     let animationActive = false;
     let currentRotation = 0.0;

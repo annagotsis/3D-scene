@@ -6,20 +6,24 @@
         this.x = params.x || 0;
         this.y = params.y || 0;
         this.z = params.z || 0;
+
         this.color = params.color || {r: 0, g: 0, b: 0};
         this.colors = params.colors || {r: 0, g: 0, b: 0};
+        this.specularColor = params.specularColor || {r: 1.0, g: 1.0, b: 1.0};
+        this.specularColors = params.specularColors || null;
+        this.shininess = params.shininess || 16;
+
         this.translate = params.translate || {x: 0, y: 0, z: 0};
-        this.currentRotation = params.currentRotation || 0;
         this.scale = params.scale || {x: 1, y: 1, z: 1};
-        this.angle = params.angle || 0;
+        this.currentRotation = params.currentRotation || 0;
         this.axis = params.axis || {x: 1.0, y: 1.0, z: 1.0};
+        this.acceleration = params.acceleration || {x: 0, y: 0, vx: 2, vy: 2, ax: 0.5, ay: 0.5};
+
         this.vertices = params.vertices || [];
         this.indices = params.indices || [];
         this.mode = params.mode;
         this.normals = params.normals || [];
-        this.specularColor = params.specularColor || {r: 1.0, g: 1.0, b: 1.0};
-        this.specularColors = params.specularColors || null;
-        this.shininess = params.shininess || 16;
+
     };
 
     // Mesh Makers
