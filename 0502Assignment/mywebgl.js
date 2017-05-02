@@ -3,6 +3,12 @@
  * takes the canvas that it will need.
  */
 ((canvas) => {
+    let Shape = window.Shape;
+    let Mesh = window.Mesh;
+    let GLSLUtilities = window.GLSLUtilities;
+    let Matrix = window.Matrix;
+    // let Matricies = window.Matricies;
+
     let gl = GLSLUtilities.getGL(canvas);
     if (!gl) {
         alert("No WebGL context found...sorry.");
@@ -11,121 +17,89 @@
         return;
     }
 
-    // Set up settings that will not change.  This is not "canned" into a
-    // utility function because these settings really can vary from program
-    // to program.
     gl.enable(gl.DEPTH_TEST);
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
     gl.viewport(0, 0, canvas.width, canvas.height);
 
+    let sun = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        color: { r: 1, g: 0.85, b: 0.3 },
+        translateValues: {tx: -3.3, ty: 1.2, tz: 0},
+        scaleValues: {sx: 0.75, sy: 0.75, sz: 0.75},
+        axisValues: { rx: -3.3, ry: 1.2, rz: 0 },
+        currentRotation: 3,
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+        mode: gl.TRIANGLES});
+
+    let redPlanet = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        translateValues: {tx: 1.3, ty: 1.2, tz: 0},
+        scaleValues: {sx: 0.7, sy: 0.7, sz: 0.7},
+        axisValues: { rx: 1.3, ry: 1.2, rz: 0 },
+        currentRotation: 3,
+        color: { r: 1, g: 0, b: 0 },
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+        mode: gl.TRIANGLES
+    });
+
+    let bluePlanet = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        color: { r: 0, g: 1, b: 1 },
+        translateValues: {tx: -1, ty: 1.2, tz: 0},
+        scaleValues: {sx: 0.6, sy: 0.6, sz: 0.6},
+        axisValues: { rx: -1, ry: 1.2, rz: 0 },
+        currentRotation: 6,
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+        mode: gl.TRIANGLES
+    });
+
+    let purplePlanet = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        color: { r: 1, g: 0, b: 1 },
+        currentRotation: 4,
+        translateValues: {tx: 3.1, ty: 1.2, tz: 0},
+        scaleValues: {sx: 0.6, sy: 0.6, sz: 0.6},
+        axisValues: {rx: 3.1, ry: 1.2, rz: 0 },
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+        mode: gl.TRIANGLES
+    });
+
+    let currentPlanet = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        color: { r: 0, g: 1, b: 0 },
+        translateValues: {tx: -0.4, ty: -4.65, tz: 0},
+        scaleValues: {sx: 5, sy: 5, sz: 5},
+        axisValues: { rx: -0.4, ry: -4.65, rz: 0 },
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
+        mode: gl.TRIANGLES
+    });
+
+    let ship = new Shape({
+        normals: Mesh.toNormalArray(Shape.pyramid()),
+        color: { r: 1, g: 0, b: 1 },
+        translateValues: {tx: 0, ty: -1.6, tz: 0},
+        scaleValues: {sx: 0.4, sy: 0.4, sz: 0.4},
+        axisValues: { rx: 0, ry: 1.0, rz: 1.0 },
+        vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
+        mode: gl.TRIANGLES
+    });
+
     // Build the objects to display.
     let objectsToDraw = [
-
-        // planets
-        // sun
-        {
-            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 20,
-            normals: Mesh.toNormalArray(Shape.sphere()),
-            color: { r: 1, g: 0.85, b: 0.3 },
-            translate: {tx: -3.3, ty: 1.2, tz: 0},
-            scale: {sx: 0.75, sy: 0.75, sz: 0.75},
-            axis: { x: -3.3, y: 1.2, z: 0},
-            currentRotation: 3,
-            angle: 40,
-            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-            mode: gl.TRIANGLES
-        },
-        // planet blue
-        {
-            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 20,
-            normals: Mesh.toNormalArray(Shape.sphere()),
-            color: { r: 0, g: 1, b: 1 },
-            translate: {tx: -1, ty: 1.2, tz: 0},
-            scale: {sx: 0.6, sy: 0.6, sz: 0.6},
-            axis: { x: -1, y: 1.2, z: 0 },
-            currentRotation: 3,
-            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-            mode: gl.TRIANGLES
-        },
-        // planet red
-        {
-            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 10,
-            normals: Mesh.toNormalArray(Shape.sphere()),
-            color: { r: 1, g: 0, b: 0 },
-            translate: {tx: 1.3, ty: 1.2, tz: 0},
-            scale: {sx: 0.7, sy: 0.7, sz: 0.7},
-            axis: { x: 1.3, y: 1.2, z: 0 },
-            currentRotation: 3,
-            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-            mode: gl.TRIANGLES
-        },
-        // planet ship is on
-        {
-            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 20,
-            normals: Mesh.toVertexNormalArray(Shape.sphere()),
-            color: { r: 0, g: 1, b: 0 },
-            translate: {tx: -0.4, ty: -6.65, tz: 0},
-            scale: {sx: 5, sy: 5, sz: 5},
-            axis: { x: -0.4, y: -6.65, z: 0 },
-            currentRotation: 0,
-            vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-            mode: gl.TRIANGLES
-        },
-
-        // ship
-        {
-            specularColor: { r: 1.0, g: 1.0, b: 1.0 },
-            shininess: 6,
-            normals: Mesh.toNormalArray(Shape.pyramid()),
-            color: { r: 1, g: 0, b: 1 },
-            vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
-            mode: gl.TRIANGLES,
-            currentRotation: 0,
-            translate: {tx: 0, ty: -1.6, tz: 0},
-            scale: {sx: 0.4, sy: 0.4, sz: 0.4},
-            axis: { x: 0, y: 1.0, z: 1.0 }
-        }
+        sun,
+        redPlanet,
+        bluePlanet,
+        purplePlanet,
+        currentPlanet,
+        ship
     ];
-    console.log(objectsToDraw);
+      // console.log(objectsToDraw);
 
     // Pass the vertices to WebGL.
     objectsToDraw.forEach((objectToDraw) => {
         objectToDraw.vertexBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.vertices);
-
-        if (!objectToDraw.colors) {
-            // If we have a single color, we expand that into an array
-            // of the same color over and over.
-            objectToDraw.colors = [];
-            for (let i = 0, maxi = objectToDraw.vertices.length / 3; i < maxi; i += 1) {
-                objectToDraw.colors = objectToDraw.colors.concat(
-                    objectToDraw.color.r,
-                    objectToDraw.color.g,
-                    objectToDraw.color.b
-                );
-            }
-        }
         objectToDraw.colorBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.colors);
-
-        // Same trick with specular colors.
-        if (!objectToDraw.specularColors) {
-            // Future refactor: helper function to convert a single value or
-            // array into an array of copies of itself.
-            objectToDraw.specularColors = [];
-            for (let j = 0, maxj = objectToDraw.vertices.length / 3; j < maxj; j += 1) {
-                objectToDraw.specularColors = objectToDraw.specularColors.concat(
-                    objectToDraw.specularColor.r,
-                    objectToDraw.specularColor.g,
-                    objectToDraw.specularColor.b
-                );
-            }
-        }
         objectToDraw.specularBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.specularColors);
-
-        // One more buffer: normals.
         objectToDraw.normalBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.normals);
     });
 
@@ -136,21 +110,17 @@
         $("#vertex-shader").text(),
         $("#fragment-shader").text(),
 
-        // Very cursory error-checking here...
         (shader) => {
             abort = true;
             alert("Shader problem: " + gl.getShaderInfoLog(shader));
         },
 
-        // Another simplistic error check: we don't even access the faulty
-        // shader program.
         (shaderProgram) => {
             abort = true;
             alert("Could not link shaders...sorry.");
         }
     );
 
-    // If the abort variable is true here, we can't continue.
     if (abort) {
         alert("Fatal errors encountered; we cannot continue.");
         return;
@@ -169,20 +139,17 @@
     let normalVector = gl.getAttribLocation(shaderProgram, "normalVector");
     gl.enableVertexAttribArray(normalVector);
 
-    // Finally, we come to the typical setup for transformation matrices:
-    // model-view and projection, managed separately.
     let modelViewMatrix = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
-    // let xRotationMatrix = gl.getUniformLocation(shaderProgram, "xRotationMatrix");
-    // let yRotationMatrix = gl.getUniformLocation(shaderProgram, "yRotationMatrix");
     let projectionMatrix = gl.getUniformLocation(shaderProgram, "projectionMatrix");
 
-    // Note the additional variables.
     let lightPosition = gl.getUniformLocation(shaderProgram, "lightPosition");
     let lightDiffuse = gl.getUniformLocation(shaderProgram, "lightDiffuse");
     let lightSpecular = gl.getUniformLocation(shaderProgram, "lightSpecular");
     let shininess = gl.getUniformLocation(shaderProgram, "shininess");
 
-    let transformMatrix = gl.getUniformLocation(shaderProgram, "transformMatrix");
+    let rotateMatrix = gl.getUniformLocation(shaderProgram, "rotateMatrix");
+    let scaleMatrix = gl.getUniformLocation(shaderProgram, "scaleMatrix");
+    let translateMatrix = gl.getUniformLocation(shaderProgram, "translateMatrix");
     let cameraMatrix = gl.getUniformLocation(shaderProgram, "cameraMatrix");
 
     /*
@@ -197,36 +164,104 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, object.specularBuffer);
         gl.vertexAttribPointer(vertexSpecularColor, 3, gl.FLOAT, false, 0, 0);
 
-        // Set the shininess.
         gl.uniform1f(shininess, object.shininess);
+        // translation(object.tx, )
+        // sceneTranslation(0,0,0);
 
-        let currentMatrix = new Matrix();
 
-        let translate = Matrix.translate(
-               object.translate.tx,
-               object.translate.ty,
-               object.translate.tz
-           );
+        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.matrix.conversion()));
 
-        let rotate = Matrix.rotate(
-            object.currentRotation * currentRotation,
-            object.axis.x,
-            object.axis.y,
-            object.axis.z
-        );
+        gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.translate(
+          object.translateValues.tx, object.translateValues.ty, object.translateValues.tz)).conversion()));
 
-        let scale = Matrix.scale(
-             object.scale.sx,
-             object.scale.sy,
-             object.scale.sz
-           );
+        gl.uniformMatrix4fv(scaleMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.scale(
+          object.scaleValues.sx, object.scaleValues.sy, object.scaleValues.sz)).conversion()));
 
-        let transformed = currentMatrix.multiply(translate).multiply(scale);
+        gl.uniformMatrix4fv(rotateMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.rotate(
+          currentRotation * object.currentRotation, object.axisValues.rx, object.axisValues.ry,
+          object.axisValues.rz)).conversion()));
 
-        let rotated = transformed.multiply(rotate);
+          console.log(object);
+          console.log(Matrix.translate(
+            2, object.translateValues.ty, object.translateValues.tz).conversion());
+        //   console.log(object.matrix);
+        //   console.log(object.tx, object.ty, object.tz);
+        //   console.log(object.translate(
+        //     object.tx, object.ty, object.tz));
+        // gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(object.matrix.orthoMatrix(
+        //     -2 * (canvas.width / canvas.height),
+        //     2 * (canvas.width / canvas.height),
+        //     -2,
+        //     2,
+        //     -10,
+        //     10
+        // ).conversion()));
+        //
+        // console.log(object.matrix.conversion());
+        // console.log(new Float32Array(object.matrix.orthoMatrix(
+        //     -2 * (canvas.width / canvas.height),
+        //     2 * (canvas.width / canvas.height),
+        //     -2,
+        //     2,
+        //     -10,
+        //     10
+        // ).conversion()));
 
-        gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(transformed.conversion()));
-        gl.uniformMatrix4fv(transformMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
+        // sun.translate(1, 1, 0);
+
+
+        // let currentMatrix = new Matrix();
+        //
+        // gl.uniformMatrix4fv(rotationMatrix, gl.FALSE, new Float32Array(
+        //   Matrix.rotate(object.currentRotation * currentRotation,
+        //   object.axis.x,
+        //   object.axis.y,
+        //   object.axis.z)
+        // .conversion()));
+        //
+        // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
+        //   Matrix.translate(
+        //     object.translate.tx,
+        //     object.translate.ty,
+        //     object.translate.tz)
+        // .conversion()));
+        //
+
+
+        // let translate = Matrix.translate(
+        //        object.translate.tx,
+        //        object.translate.ty,
+        //        object.translate.tz
+        //    );
+        //
+        // // sun.translate(1, 0, 1);
+        //
+        // let rotate = Matrix.rotate(
+        //     object.currentRotation * currentRotation,
+        //     object.axis.x,
+        //     object.axis.y,
+        //     object.axis.z
+        // );
+        //
+        // let scale = Matrix.scale(
+        //      object.scale.sx,
+        //      object.scale.sy,
+        //      object.scale.sz
+        //    );
+        //
+        // let translated = currentMatrix.multiply(translate);
+        // let scaled = currentMatrix.multiply(scale);
+        //
+        // let rotated = currentMatrix.multiply(rotate);
+
+        // object.translate(0, position, 0);
+
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(currentMatrix.conversion()));
+        // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(translated.conversion()));
+        // gl.uniformMatrix4fv(scaleMatrix, gl.FALSE, new Float32Array(scaled.conversion()));
+        // gl.uniformMatrix4fv(rotationMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
+
+        sun.translate(2, 0, 1);
 
         // Set the varying normal vectors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
@@ -241,56 +276,54 @@
     /*
      * Displays the scene.
      */
-    // let rotationAroundX = 0.0;
-    // let rotationAroundY = 0.0;
     let drawScene = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -1, 0, 1, 0).conversion());
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(Matrix.scale())
+        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(Matrix.rotate)
 
-        // Set the overall rotation.
-        // gl.uniformMatrix4fv(xRotationMatrix, gl.FALSE, new Float32Array(
-        //     Matrix.rotate(rotationAroundX, 1.0, 0.0, 0.0).conversion()
-        // ));
-        // gl.uniformMatrix4fv(yRotationMatrix, gl.FALSE, new Float32Array(
-        //     Matrix.rotate(rotationAroundY, 0.0, 1.0, 0.0).conversion()
-        // ));
+        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -1, 0, 1, 0).conversion());
+        // sun.translate(1, 1, 0);
+        // drawAllObjects(objectsToDraw.forEach(drawObject));
+        // sun.scale(0.2, 0.2,);
 
         objectsToDraw.forEach(drawObject);
+
+        // objectsToDraw.forEach((object) => {
+        //     object.drawObject(translateMatrix);
+        // });
+
+
+        // console.log(sun.translate(1, 1, 0));
+
+        // sun.translate(1, 1, 0);
+        // console.log(sun.translate(1, 1, 0));
 
         // All done.
         gl.flush();
     };
 
-    /*
-     * Performs rotation calculations.
-     */
-    // let xDragStart;
-    // let yDragStart;
-    // let xRotationStart;
-    // let yRotationStart;
-    //
-    // let rotateScene = (event) => {
-    //     rotationAroundX = xRotationStart - yDragStart + event.clientY;
-    //     rotationAroundY = yRotationStart - xDragStart + event.clientX;
-    //     drawScene();
-    // };
+    // drawScene();
+    // console.log(new Float32Array(Matricies.orthoMatrix(
+    //     -2 * (canvas.width / canvas.height),
+    //     2 * (canvas.width / canvas.height),
+    //     -2,
+    //     2,
+    //     -10,
+    //     10
+    // ).conversion()));
 
-    // Because our canvas element will not change size (in this program),
-    // we can set up the projection matrix once, and leave it at that.
-    // Note how this finally allows us to "see" a greater coordinate range.
-    // We keep the vertical range fixed, but change the horizontal range
-    // according to the aspect ratio of the canvas.  We can also expand
-    // the z range now.
     gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.orthoMatrix(
-        -4 * (canvas.width / canvas.height),
-        4 * (canvas.width / canvas.height),
-        -4,
-        4,
+        -2 * (canvas.width / canvas.height),
+        2 * (canvas.width / canvas.height),
+        -2,
+        2,
         -10,
         10
     ).conversion()));
+
+
 
     // Set up our one light source and its colors.
     gl.uniform4fv(lightPosition, [-1500.0, 1000.0, 100.0, 1.0]);
@@ -299,11 +332,17 @@
 
     let animationActive = false;
     let currentRotation = 0.0;
+    let acceleration = -0.098;
     let previousTimestamp = null;
+
+    let currentFrame;
+    let velocity = 0;
+    let position = 0;
+    let lastPosition = null;
+    let lastVelocity = null;
 
     const FRAMES_PER_SECOND = 60;
     const MILLISECONDS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
-
     const DEGREES_PER_MILLISECOND = 0.033;
     const FULL_CIRCLE = 360.0;
 
@@ -328,9 +367,23 @@
             return;
         }
 
+        velocity += lastVelocity + acceleration * currentFrame;
+
+        if (position < -2) {
+            velocity += -1;
+            position += lastPosition + velocity;
+        } else {
+            position = lastPosition * velocity;
+        }
+        // position = velocity * currentFrame;
+
         // All clear.
         currentRotation += DEGREES_PER_MILLISECOND * progress;
         drawScene();
+        lastPosition = position;
+        lastVelocity = velocity;
+        currentFrame += 1;
+
         if (currentRotation >= FULL_CIRCLE) {
             currentRotation -= FULL_CIRCLE;
         }
@@ -348,16 +401,8 @@
         }
     });
 
-
-    // Instead of animation, we do interaction: let the mouse control rotation.
-    // $(canvas).mousedown((event) => {
-    //     xDragStart = event.clientX;
-    //     yDragStart = event.clientY;
-    //     xRotationStart = rotationAroundX;
-    //     yRotationStart = rotationAroundY;
-    //     $(canvas).mousemove(rotateScene);
-    // }).mouseup((event) => {
-    //     $(canvas).unbind("mousemove");
+    // $("#ship").click(function() {
+    //     ship1();
     // });
 
     // Draw the initial scene.

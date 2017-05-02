@@ -22,6 +22,8 @@
       the <code>canvas</code> element, either.
     </canvas>
 
+    <button id="ship">Ship</button>
+
     <!-- jQuery makes some things more convenient. -->
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
@@ -33,9 +35,9 @@
     <script src="vector.js"></script>
 
     <!-- Shapes is a library that generates "canned" shapes. -->
+    <script src="Matrix.js"></script>
     <script src="shapes.js"></script>
     <script src="mesh.js"></script>
-    <script src="Matrix.js"></script>
 
     <!-- Set up shaders: we've placed the source in script elements for
         simplicity.  Shaders are ideally kept in separate files for easier
@@ -62,6 +64,9 @@
       uniform mat4 xRotationMatrix;
       uniform mat4 yRotationMatrix;
 
+      uniform mat4 translateMatrix;
+      uniform mat4 rotateMatrix;
+      uniform mat4 scaleMatrix;
       // We don't calculate color in the vertex shader anymore.  Instead,
       // we will pass on information that will affect the color later.
       varying vec3 fragmentDiffuseColor;
@@ -93,8 +98,8 @@
           fragmentDiffuseColor = vertexDiffuseColor;
           fragmentSpecularColor = vertexSpecularColor;
 
-          vec4 finalVertexPosition = transformMatrix * modelViewMatrix * vec4(3.0 * vertexPosition, 1.0);
-          gl_Position = projectionMatrix * finalVertexPosition * cameraMatrix;
+          vec4 finalVertexPosition = translateMatrix * rotateMatrix * scaleMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
+          gl_Position = finalVertexPosition * cameraMatrix * projectionMatrix;
           // gl_Position = projectionMatrix * cameraMatrix * modelViewMatrix * vec4(2.0 * vertexPosition, 1.0);
       }
     </script>
