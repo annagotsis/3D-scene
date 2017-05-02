@@ -21,6 +21,8 @@
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
     gl.viewport(0, 0, canvas.width, canvas.height);
 
+    // let position = 0;
+
     let sun = new Shape({
         normals: Mesh.toVertexNormalArray(Shape.sphere()),
         color: { r: 1, g: 0.85, b: 0.3 },
@@ -64,23 +66,25 @@
         mode: gl.TRIANGLES
     });
 
-    let currentPlanet = new Shape({
-        normals: Mesh.toVertexNormalArray(Shape.sphere()),
-        color: { r: 0, g: 1, b: 0 },
-        translateValues: {tx: -0.4, ty: -4.65, tz: 0},
-        scaleValues: {sx: 5, sy: 5, sz: 5},
-        axisValues: { rx: -0.4, ry: -4.65, rz: 0 },
-        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
-        mode: gl.TRIANGLES
-    });
-
     let ship = new Shape({
         normals: Mesh.toNormalArray(Shape.pyramid()),
         color: { r: 1, g: 0, b: 1 },
-        translateValues: {tx: 0, ty: -1.6, tz: 0},
+        currentRotation: 2,
+        translateValues: {tx: 2, ty: 4, tz: 0},
         scaleValues: {sx: 0.4, sy: 0.4, sz: 0.4},
-        axisValues: { rx: 0, ry: 1.0, rz: 1.0 },
+        axisValues: { rx: -4, ry: 4, rz: 0},
         vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
+        mode: gl.TRIANGLES
+    });
+
+    let planet = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.sphere()),
+        color: { r: 0, g: 1, b: 0},
+        currentRotation: 4,
+        translateValues: {tx: 0, ty: 0, tz: 0},
+        scaleValues: {sx: 1.5, sy: 1.5, sz: 1.5},
+        axisValues: {rx: 3.1, ry: 1.2, rz: 0 },
+        vertices: Mesh.toRawTriangleArray(Shape.sphere()),
         mode: gl.TRIANGLES
     });
 
@@ -89,19 +93,19 @@
         sun,
         redPlanet,
         bluePlanet,
-        purplePlanet,
-        currentPlanet,
-        ship
+        purplePlanet
+        // currentPlanet
+        // ship
     ];
       // console.log(objectsToDraw);
 
     // Pass the vertices to WebGL.
-    objectsToDraw.forEach((objectToDraw) => {
-        objectToDraw.vertexBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.vertices);
-        objectToDraw.colorBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.colors);
-        objectToDraw.specularBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.specularColors);
-        objectToDraw.normalBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.normals);
-    });
+    // objectsToDraw.forEach((objectToDraw) => {
+    //     objectToDraw.vertexBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.vertices);
+    //     objectToDraw.colorBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.colors);
+    //     objectToDraw.specularBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.specularColors);
+    //     objectToDraw.normalBuffer = GLSLUtilities.initVertexBuffer(gl, objectToDraw.normals);
+    // });
 
     // Initialize the shaders.
     let abort = false;
@@ -157,6 +161,11 @@
      * for each object drawn.
      */
     let drawObject = (object) => {
+
+        object.vertexBuffer = GLSLUtilities.initVertexBuffer(gl, object.vertices);
+        object.colorBuffer = GLSLUtilities.initVertexBuffer(gl, object.colors);
+        object.specularBuffer = GLSLUtilities.initVertexBuffer(gl, object.specularColors);
+        object.normalBuffer = GLSLUtilities.initVertexBuffer(gl, object.normals);
         // Set the varying colors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.colorBuffer);
         gl.vertexAttribPointer(vertexDiffuseColor, 3, gl.FLOAT, false, 0, 0);
@@ -165,14 +174,12 @@
         gl.vertexAttribPointer(vertexSpecularColor, 3, gl.FLOAT, false, 0, 0);
 
         gl.uniform1f(shininess, object.shininess);
-        // translation(object.tx, )
-        // sceneTranslation(0,0,0);
-
 
         gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(object.matrix.conversion()));
 
         gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.translate(
-          object.translateValues.tx, object.translateValues.ty, object.translateValues.tz)).conversion()));
+          object.translateValues.tx, position * object.translateValues.ty,
+          object.translateValues.tz)).conversion()));
 
         gl.uniformMatrix4fv(scaleMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.scale(
           object.scaleValues.sx, object.scaleValues.sy, object.scaleValues.sz)).conversion()));
@@ -180,88 +187,6 @@
         gl.uniformMatrix4fv(rotateMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.rotate(
           currentRotation * object.currentRotation, object.axisValues.rx, object.axisValues.ry,
           object.axisValues.rz)).conversion()));
-
-          console.log(object);
-          console.log(Matrix.translate(
-            2, object.translateValues.ty, object.translateValues.tz).conversion());
-        //   console.log(object.matrix);
-        //   console.log(object.tx, object.ty, object.tz);
-        //   console.log(object.translate(
-        //     object.tx, object.ty, object.tz));
-        // gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(object.matrix.orthoMatrix(
-        //     -2 * (canvas.width / canvas.height),
-        //     2 * (canvas.width / canvas.height),
-        //     -2,
-        //     2,
-        //     -10,
-        //     10
-        // ).conversion()));
-        //
-        // console.log(object.matrix.conversion());
-        // console.log(new Float32Array(object.matrix.orthoMatrix(
-        //     -2 * (canvas.width / canvas.height),
-        //     2 * (canvas.width / canvas.height),
-        //     -2,
-        //     2,
-        //     -10,
-        //     10
-        // ).conversion()));
-
-        // sun.translate(1, 1, 0);
-
-
-        // let currentMatrix = new Matrix();
-        //
-        // gl.uniformMatrix4fv(rotationMatrix, gl.FALSE, new Float32Array(
-        //   Matrix.rotate(object.currentRotation * currentRotation,
-        //   object.axis.x,
-        //   object.axis.y,
-        //   object.axis.z)
-        // .conversion()));
-        //
-        // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(
-        //   Matrix.translate(
-        //     object.translate.tx,
-        //     object.translate.ty,
-        //     object.translate.tz)
-        // .conversion()));
-        //
-
-
-        // let translate = Matrix.translate(
-        //        object.translate.tx,
-        //        object.translate.ty,
-        //        object.translate.tz
-        //    );
-        //
-        // // sun.translate(1, 0, 1);
-        //
-        // let rotate = Matrix.rotate(
-        //     object.currentRotation * currentRotation,
-        //     object.axis.x,
-        //     object.axis.y,
-        //     object.axis.z
-        // );
-        //
-        // let scale = Matrix.scale(
-        //      object.scale.sx,
-        //      object.scale.sy,
-        //      object.scale.sz
-        //    );
-        //
-        // let translated = currentMatrix.multiply(translate);
-        // let scaled = currentMatrix.multiply(scale);
-        //
-        // let rotated = currentMatrix.multiply(rotate);
-
-        // object.translate(0, position, 0);
-
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(currentMatrix.conversion()));
-        // gl.uniformMatrix4fv(translateMatrix, gl.FALSE, new Float32Array(translated.conversion()));
-        // gl.uniformMatrix4fv(scaleMatrix, gl.FALSE, new Float32Array(scaled.conversion()));
-        // gl.uniformMatrix4fv(rotationMatrix, gl.FALSE, new Float32Array(rotated.conversion()));
-
-        sun.translate(2, 0, 1);
 
         // Set the varying normal vectors.
         gl.bindBuffer(gl.ARRAY_BUFFER, object.normalBuffer);
@@ -276,43 +201,31 @@
     /*
      * Displays the scene.
      */
-    let drawScene = () => {
+    let drawScene1 = () => {
         // Clear the display.
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(Matrix.scale())
-        // gl.uniformMatrix4fv(modelViewMatrix, gl.FALSE, new Float32Array(Matrix.rotate)
-
         gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(0, 0, 0, 0, 0, -1, 0, 1, 0).conversion());
-        // sun.translate(1, 1, 0);
-        // drawAllObjects(objectsToDraw.forEach(drawObject));
-        // sun.scale(0.2, 0.2,);
-
         objectsToDraw.forEach(drawObject);
-
-        // objectsToDraw.forEach((object) => {
-        //     object.drawObject(translateMatrix);
-        // });
-
-
-        // console.log(sun.translate(1, 1, 0));
-
-        // sun.translate(1, 1, 0);
-        // console.log(sun.translate(1, 1, 0));
-
         // All done.
         gl.flush();
     };
 
-    // drawScene();
-    // console.log(new Float32Array(Matricies.orthoMatrix(
-    //     -2 * (canvas.width / canvas.height),
-    //     2 * (canvas.width / canvas.height),
-    //     -2,
-    //     2,
-    //     -10,
-    //     10
-    // ).conversion()));
+    let drawScene2 = () => {
+        // Clear the display.
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(2, 0, 2, 0, 0, -2, 0, 2, 0).conversion());
+
+        let objectsToDraw = [
+            planet,
+            ship,
+        ]
+
+        objectsToDraw.forEach(drawObject);
+        // All done.
+        gl.flush();
+    };
 
     gl.uniformMatrix4fv(projectionMatrix, gl.FALSE, new Float32Array(Matrix.orthoMatrix(
         -2 * (canvas.width / canvas.height),
@@ -323,8 +236,6 @@
         10
     ).conversion()));
 
-
-
     // Set up our one light source and its colors.
     gl.uniform4fv(lightPosition, [-1500.0, 1000.0, 100.0, 1.0]);
     gl.uniform3fv(lightDiffuse, [1.0, 1.0, 1.0]);
@@ -332,14 +243,16 @@
 
     let animationActive = false;
     let currentRotation = 0.0;
-    let acceleration = -0.098;
+    let acceleration = -0.0098;
     let previousTimestamp = null;
 
-    let currentFrame;
-    let velocity = 0;
+    let currentFrame = 0;
+    let velocity = 0.0;
     let position = 0;
     let lastPosition = null;
     let lastVelocity = null;
+    const floor = -1;
+    const friction = 0.909999;
 
     const FRAMES_PER_SECOND = 60;
     const MILLISECONDS_PER_FRAME = 1000 / FRAMES_PER_SECOND;
@@ -367,22 +280,24 @@
             return;
         }
 
-        velocity += lastVelocity + acceleration * currentFrame;
+        velocity += acceleration;
 
-        if (position < -2) {
-            velocity += -1;
-            position += lastPosition + velocity;
+        if (position < floor) {
+            velocity = -velocity;
+            velocity *= friction;
+            position += velocity;
         } else {
-            position = lastPosition * velocity;
+            position += velocity;
         }
+        // currentRotation += 1;
         // position = velocity * currentFrame;
 
         // All clear.
         currentRotation += DEGREES_PER_MILLISECOND * progress;
-        drawScene();
+        drawScene1();
         lastPosition = position;
         lastVelocity = velocity;
-        currentFrame += 1;
+        currentFrame = 1;
 
         if (currentRotation >= FULL_CIRCLE) {
             currentRotation -= FULL_CIRCLE;
@@ -393,6 +308,54 @@
         window.requestAnimationFrame(advanceScene);
     };
 
+    let miniScene = (timestamp) => {
+        // Check if the user has turned things off.
+        if (!animationActive) {
+            return;
+        }
+
+        // Initialize the timestamp.
+        if (!previousTimestamp) {
+            previousTimestamp = timestamp;
+            window.requestAnimationFrame(miniScene);
+            return;
+        }
+
+        // Check if it's time to advance.
+        var progress = timestamp - previousTimestamp;
+        if (progress < MILLISECONDS_PER_FRAME) {
+            // Do nothing if it's too soon.
+            window.requestAnimationFrame(miniScene);
+            return;
+        }
+
+        // velocity += acceleration;
+
+        if (position < floor) {
+        //     velocity = -velocity;
+        //     velocity *= friction;
+            position += velocity;
+        // } else {+
+        //     xposition += velocity;
+        }
+
+        // All clear.
+        currentRotation += DEGREES_PER_MILLISECOND * progress;
+        drawScene2();
+        // lastPosition = position;
+        // lastVelocity = velocity;
+        currentFrame += 1;
+
+        if (currentRotation >= FULL_CIRCLE) {
+            currentRotation -= FULL_CIRCLE;
+        }
+
+        // Request the next frame.
+        previousTimestamp = timestamp;
+        window.requestAnimationFrame(miniScene);
+    };
+
+
     $(canvas).click(() => {
         animationActive = !animationActive;
         if (animationActive) {
@@ -401,11 +364,31 @@
         }
     });
 
-    // $("#ship").click(function() {
-    //     ship1();
-    // });
+    $("#ship").click(function() {
+        drawScene2();
+        animationActive = !animationActive;
+        if (animationActive) {
+              // drawObject(ship);
+            previousTimestamp = null;
+            window.requestAnimationFrame(miniScene);
+        }
+
+        // $(canvas).click(() => {
+        //     animationActive = !animationActive;
+        //     if (animationActive) {
+        //         previousTimestamp = null;
+        //         window.requestAnimationFrame(miniScene);
+        //     }
+        // });
+        // drawObject(currentPlanet);
+        // drawObject(ship);
+
+
+      // console.log("draw", drawObject(ship));
+        // drawObject(ship);
+    });
 
     // Draw the initial scene.
-    drawScene();
+    drawScene1();
 
 })(document.getElementById("webgl"));
