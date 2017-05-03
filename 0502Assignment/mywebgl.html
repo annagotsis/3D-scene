@@ -1,28 +1,39 @@
 <!doctype html>
 <html>
   <head>
+    <style>
+    #scene1 {
+      background-color: #4CAF50;
+      font-size: 16px;
+    }
+    #scene2 {
+      background-color: #008CBA;
+      font-size: 16px;
+    }
+    #clear {
+      background-color: red;
+      font-size: 16px;
+    }
+    </style>
     <meta charset="UTF-8"/>
-    <title>More Normals and Specular Lighting in WebGL</title>
+    <title>My Scene</title>
     <link rel="stylesheet" href="mywebgl.css" />
   </head>
   <body>
-    <h1>More Normals and Specular Lighting in WebGL</h1>
+    <h1>My Scene</h1>
 
-    <p>You’ll need a WebGL-capable web browser to see anything here;
-      instructions can be found in this
-      <a href="http://www.khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">official
-      WebGL wiki page</a>.</p>
+    <p>Pick a scene and watch it come to life! <br>
+    If you want to watch both scenes, make sure you clear the scene first.</p>
 
-    <p>This page demonstrates an approach toward automatically generating normals plus the
-      implementation of specular lighting in WebGL.</p>
+    <button id="scene1">Scene 1</button>
+    <button id="scene2">Scene 2</button>
+    <button id="clear">Clear Scene</button>
 
     <!-- Note the rectangular canvas now. -->
     <canvas id="webgl" width="1024" height="512">
       Sorry, your web browser does not appear to support
       the <code>canvas</code> element, either.
     </canvas>
-
-    <button id="ship">Ship</button>
 
     <!-- jQuery makes some things more convenient. -->
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -154,7 +165,6 @@
           gl_FragColor = vec4(finalDiffuse.rgb + finalSpecular.rgb, 1.0);
       }
     </script>
-
     <!-- This script sets up the specific scene for this page. -->
     <script src="mywebgl.js"></script>
   </body>
