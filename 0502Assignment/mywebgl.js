@@ -57,31 +57,30 @@
         normals: Mesh.toVertexNormalArray(Shape.sphere()),
         color: { r: 1, g: 0, b: 1 },
         currentRotation: 4,
-        translateValues: {tx: 3.1, ty: -1.5, tz: 0},
+        translateValues: {tx: 3.1, ty: 1.2, tz: 0},
         scaleValues: {sx: 0.6, sy: 0.6, sz: 0.6},
         axisValues: {rx: 3.1, ry: 1.2, rz: 0 },
         vertices: Mesh.toRawTriangleArray(Shape.sphere()),
         mode: gl.TRIANGLES
     });
 
-    let ship = new Shape({
-        normals: Mesh.toNormalArray(Shape.pyramid()),
-        color: { r: 1, g: 0, b: 1 },
-        currentRotation: 2,
-        translateValues: {tx: 2, ty: 4, tz: 0},
-        scaleValues: {sx: 0.4, sy: 0.4, sz: 0.4},
-        axisValues: { rx: -4, ry: 4, rz: 0},
+    let pyramid = new Shape({
+        normals: Mesh.toVertexNormalArray(Shape.pyramid()),
+        color: { r: 1, g: 0, b: 1},
+        translateValues: {tx: 2.1, ty: 0.5, tz: 0},
+        scaleValues: {sx: 1, sy: 1, sz: 1},
         vertices: Mesh.toRawTriangleArray(Shape.pyramid()),
         mode: gl.TRIANGLES
     });
 
     let planet = new Shape({
+        specularColors: {r: 0.4, g: 0, b: 1},
         normals: Mesh.toVertexNormalArray(Shape.sphere()),
-        color: { r: 0, g: 1, b: 0},
-        currentRotation: 4,
-        translateValues: {tx: 0, ty: 0, tz: 0},
-        scaleValues: {sx: 1.5, sy: 1.5, sz: 1.5},
-        axisValues: {rx: 3.1, ry: 1.2, rz: 0 },
+        color: { r: 0, g: 0.4, b: 0.3},
+        currentRotation: 8,
+        translateValues: {tx: -2, ty: 1, tz: -2},
+        scaleValues: {sx: 1, sy: 1, sz: 1},
+        axisValues: {rx: 3.1, ry: 3.2, rz: 3.1 },
         vertices: Mesh.toRawTriangleArray(Shape.sphere()),
         mode: gl.TRIANGLES
     });
@@ -163,7 +162,7 @@
           object.scaleValues.sx, object.scaleValues.sy, object.scaleValues.sz)).conversion()));
 
         gl.uniformMatrix4fv(rotateMatrix, gl.FALSE, new Float32Array(object.matrix.multiply(Matrix.rotate(
-          currentRotation * object.currentRotation, axis * object.axisValues.rx, object.axisValues.ry,
+          currentRotation * object.currentRotation, object.axisValues.rx, object.axisValues.ry,
           object.axisValues.rz)).conversion()));
 
         // Set the varying normal vectors.
@@ -202,9 +201,10 @@
         gl.uniformMatrix4fv(cameraMatrix, gl.FALSE, Matrix.camera(2, 0, 2, 0, 0, -2, 0, 2, 0).conversion());
 
         let objectsToDraw = [
-            ship,
+            pyramid,
             planet
         ];
+        console.log(objectsToDraw);
         objectsToDraw.forEach(drawObject);
         gl.flush();
     };
@@ -230,11 +230,10 @@
 
     let currentFrame = 0;
     let velocity = 0.0;
-    let xposition = 0;
-    let yposition = 0;
+    let xposition = 1;
+    let yposition = 1;
     let lastPosition = null;
     let lastVelocity = null;
-    let axis = 2;
     const floor = -1;
     const friction = 0.909999;
 
@@ -280,14 +279,14 @@
         } else {
             xposition += velocity;
         }
-        // currentRotation += 1;
-        // position = velocity * currentFrame;
+
+        lastVelocity = velocity;
 
         // All clear.
         currentRotation += DEGREES_PER_MILLISECOND * progress;
         drawScene1();
-        // lastPosition = yposition;
-        lastVelocity = velocity;
+        lastPosition = yposition;
+
         currentFrame = 1;
 
         if (currentRotation >= FULL_CIRCLE) {
@@ -315,26 +314,13 @@
             return;
         }
 
-        axis += xposition;
         velocity += 0.01;
+        velocity = -velocity;
+        yposition += velocity;
 
-
-        if (yposition < floor) {
-            yposition += velocity;
-        }
-        //     velocity = -velocity;
-        //     velocity *= friction;
-        //     position += velocity;
-        // } else {
-        //     position += velocity;
-        // }
-        // currentRotation += 1;
-        // position = -position;
         // All clear.
         currentRotation += DEGREES_PER_MILLISECOND * progress;
         drawScene2();
-        lastPosition = yposition;
-        lastVelocity = velocity;
         currentFrame = 1;
 
         if (currentRotation >= FULL_CIRCLE) {
@@ -346,6 +332,11 @@
         window.requestAnimationFrame(scene2animation);
     };
 
+    $("#clear").click(function() {
+        animationActive = false;
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    });
+
     $("#scene1").click(function() {
         drawScene1();
         animationActive = true;
@@ -353,28 +344,15 @@
             previousTimestamp = null;
             window.requestAnimationFrame(advanceScene);
         }
-        if (!animationActive) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
     });
-
-    $("#clear").click(function() {
-        animationActive = false;
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    });
-
 
     $("#scene2").click(function() {
         drawScene2();
         animationActive = true;
         if (animationActive) {
-              // drawObject(ship);
             previousTimestamp = null;
             window.requestAnimationFrame(scene2animation);
         }
     });
-
-    // Draw the initial scene.
-    // drawScene1();
 
 })(document.getElementById("webgl"));
